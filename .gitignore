@@ -1,0 +1,8 @@
+# 永远不要把 API Key 配置文件提交进仓库
+llm_config.json
+
+# 本地杂物
+.screenshots/
+.trae-html-share-packages/
+__pycache__/
+.DS_Store

@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>改命 · QUIBI — 你能救活烧掉 17.5 亿美元的公司吗</title>
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg2:#101012;
+    --panel:#151518;
+    --panel2:#1b1b1f;
+    --line:#2a2a30;
+    --bone:#e9e5da;
+    --dim:#7d7d88;
+    --acid:#c8ff3d;
+    --acid-dim:#8ba82c;
+    --blood:#ff4d4d;
+    --gold:#e8c06a;
+    --blue:#6aa8ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--bone);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 50% -20%, rgba(200,255,61,.05), transparent 55%);
+  }
+  ::selection{background:var(--acid);color:#000}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- Header ---------- */
+  header{
+    border-bottom:1px solid var(--line);
+    padding:18px 0;
+    position:sticky;top:0;z-index:20;
+    background:rgba(10,10,11,.88);
+    backdrop-filter:blur(12px);
+  }
+  .head-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .skull{font-size:24px;line-height:1;filter:grayscale(.2)}
+  .brand h1{
+    font-family:Georgia,"Songti SC","STSong",serif;
+    font-size:19px;letter-spacing:.14em;font-weight:600;
+  }
+  .brand h1 span{color:var(--acid-dim)}
+  .sub{font-size:11px;color:var(--dim);letter-spacing:.18em;text-transform:uppercase}
+  .btn{
+    font-family:inherit;font-size:13px;cursor:pointer;
+    background:transparent;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;
+    padding:7px 15px;transition:.2s;letter-spacing:.05em;
+    white-space:nowrap;flex:none;
+  }
+  .btn:hover{color:var(--bone);border-color:#444}
+  .btn.acid{border-color:var(--acid);color:var(--acid)}
+  .btn.acid:hover{background:var(--acid);color:#000}
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid;grid-template-columns:290px 1fr;gap:24px;
+    padding:26px 0 80px;
+  }
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr;gap:16px;padding-top:18px}
+    main{order:1}
+    aside{order:2;margin-top:6px}
+  }
+  @media(max-width:600px){
+    .sub{display:none}
+    header{padding:14px 0}
+    .brand h1{font-size:17px}
+  }
+
+  /* ---------- Dashboard ---------- */
+  aside{position:sticky;top:92px;align-self:start}
+  @media(max-width:900px){aside{position:static}}
+  .card{
+    background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:18px;
+  }
+  .card + .card{margin-top:14px}
+  .card-title{
+    font-size:10px;letter-spacing:.22em;color:var(--dim);
+    text-transform:uppercase;margin-bottom:14px;
+  }
+  .stat{margin-bottom:13px}
+  .stat:last-child{margin-bottom:0}
+  .stat-top{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:5px}
+  .stat-name{color:var(--dim);letter-spacing:.05em}
+  .stat-val{font-variant-numeric:tabular-nums;font-weight:600;font-size:13px}
+  .bar{height:5px;background:#232329;border-radius:99px;overflow:hidden}
+  .bar i{
+    display:block;height:100%;width:0;border-radius:99px;
+    background:var(--acid);transition:width .7s cubic-bezier(.2,.8,.2,1), background .4s;
+  }
+  .bar i.warn{background:var(--gold)}
+  .bar i.crit{background:var(--blood)}
+
+  .kpi{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+  .kpi-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+  .kpi-row .k{color:var(--dim)}
+  .kpi-row .v{font-variant-numeric:tabular-nums;font-weight:600}
+
+  /* timeline */
+  .track{display:flex;align-items:center;gap:0;margin-bottom:12px}
+  .track .dot{width:7px;height:7px;border-radius:99px;background:#333;flex:none;transition:.3s}
+  .track .dot.done{background:var(--acid)}
+  .track .dot.now{background:var(--bone);box-shadow:0 0 0 3px rgba(233,229,218,.15)}
+  .track .seg{height:1px;flex:1;background:#2a2a30}
+  .track .seg.done{background:var(--acid-dim)}
+  .track-labels{display:flex;justify-content:space-between;font-size:9px;color:#555;letter-spacing:.08em}
+
+  .flag{
+    display:inline-block;font-size:10px;letter-spacing:.06em;
+    padding:2px 8px;border-radius:99px;margin:3px 4px 0 0;
+    background:#1f1f24;color:var(--dim);border:1px solid #2c2c33;
+  }
+  .flag.good{color:var(--acid-dim);border-color:#3a4a1c;background:rgba(200,255,61,.06)}
+  .flag.bad{color:#c96;border-color:#4a3a1c;background:rgba(232,192,106,.06)}
+
+  /* ---------- Stage ---------- */
+  main{min-width:0}
+  .date-tag{
+    font-size:11px;letter-spacing:.24em;color:var(--acid-dim);
+    margin-bottom:10px;font-variant-numeric:tabular-nums;
+  }
+  .node-title{
+    font-family:Georgia,"Songti SC","STSong",serif;
+    font-size:30px;line-height:1.3;font-weight:600;margin-bottom:14px;
+    letter-spacing:.02em;
+  }
+  .brief{
+    color:#b9b5a9;font-size:15px;margin-bottom:26px;
+    max-width:64ch;
+  }
+  .brief em{color:var(--bone);font-style:normal;border-bottom:1px solid var(--acid-dim)}
+
+  .choices{display:flex;flex-direction:column;gap:11px}
+  .choice{
+    text-align:left;width:100%;
+    background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:16px 18px;cursor:pointer;
+    transition:.18s;position:relative;color:inherit;font-family:inherit;
+  }
+  .choice:hover{
+    border-color:#3c3c46;background:var(--panel2);
+    transform:translateY(-1px);
+  }
+  .choice .idx{
+    font-family:Georgia,serif;font-size:12px;color:var(--acid-dim);
+    letter-spacing:.1em;margin-right:9px;
+  }
+  .choice .ct{font-size:15px;font-weight:600;letter-spacing:.02em}
+  .choice .cd{font-size:13px;color:var(--dim);margin-top:4px;line-height:1.65}
+  .choice .tag{
+    position:absolute;top:14px;right:16px;
+    font-size:9px;letter-spacing:.1em;color:#5a5a64;
+    border:1px solid #2c2c33;border-radius:99px;padding:1px 8px;
+  }
+  .choice:hover .tag{color:var(--acid-dim);border-color:#3a4a1c}
+  .choice .marks{margin-top:9px;display:flex;gap:10px;flex-wrap:wrap}
+  .mk{font-size:10px;letter-spacing:.05em;font-variant-numeric:tabular-nums}
+  .mk.up{color:var(--acid-dim)}
+  .mk.dn{color:#c96}
+
+  /* result / narrative */
+  .reveal{animation:fadeUp .5s ease both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .chosen{
+    border-left:2px solid var(--acid);
+    padding:2px 0 2px 16px;margin-bottom:22px;
+  }
+  .chosen .lbl{font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+  .chosen .val{font-size:16px;font-weight:600;margin-top:3px}
+  .phase-note{
+    font-size:11.5px;color:#6f6f7a;letter-spacing:.02em;
+    margin:-14px 0 20px 18px;font-variant-numeric:tabular-nums;
+  }
+
+  .agent{
+    background:linear-gradient(180deg, rgba(200,255,61,.045), rgba(200,255,61,.012));
+    border:1px solid #2e3a17;border-radius:12px;
+    padding:20px 22px;margin-bottom:20px;
+  }
+  .agent-head{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .pulse{width:6px;height:6px;border-radius:99px;background:var(--acid);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:.35;box-shadow:0 0 0 0 rgba(200,255,61,.4)}50%{opacity:1;box-shadow:0 0 0 5px rgba(200,255,61,0)}}
+  .agent-head span{font-size:10px;letter-spacing:.22em;color:var(--acid-dim);text-transform:uppercase}
+  .agent p{font-size:14px;line-height:1.85;color:#c9c5b9;margin-bottom:11px;opacity:0;animation:fadeUp .5s ease forwards}
+  .agent p:last-child{margin-bottom:0}
+  .agent p.risk{color:var(--gold);font-size:13px}
+  .agent p.risk b{color:var(--gold);font-weight:600}
+
+  .history{
+    border:1px dashed #34343c;border-radius:10px;
+    padding:15px 17px;margin-bottom:22px;background:rgba(255,255,255,.012);
+  }
+  .history .hl{font-size:10px;letter-spacing:.2em;color:#666;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+  .history p{font-size:13px;color:#9b97a0;line-height:1.75}
+
+  /* ---------- AI 状态 ---------- */
+  .agent p.streaming::after{
+    content:'▊';color:var(--acid);margin-left:2px;
+    animation:blink .8s steps(2) infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+  .thinking{display:flex;gap:5px;align-items:center;padding:4px 0 10px}
+  .thinking i{
+    width:5px;height:5px;border-radius:99px;background:var(--acid-dim);
+    display:block;animation:think 1.2s infinite;
+  }
+  .thinking i:nth-child(2){animation-delay:.15s}
+  .thinking i:nth-child(3){animation-delay:.3s}
+  @keyframes think{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  .think-text{font-size:12px;color:#6f7f4a;letter-spacing:.05em}
+  .ai-note{
+    font-size:11.5px;color:#a8804a;border-left:2px solid #664a22;
+    padding:2px 0 2px 10px;margin-bottom:12px;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:60;
+    background:rgba(5,5,6,.82);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-box{
+    width:100%;max-width:480px;background:var(--bg2);
+    border:1px solid #33333a;border-radius:14px;padding:24px;
+    max-height:88vh;overflow:auto;
+  }
+  .modal-box h3{
+    font-family:Georgia,"Songti SC",serif;font-size:19px;
+    margin-bottom:6px;letter-spacing:.03em;
+  }
+  .modal-sub{font-size:12px;color:var(--dim);line-height:1.7;margin-bottom:20px}
+  .seg{display:flex;gap:6px;margin-bottom:18px}
+  .seg button{
+    flex:1;font-family:inherit;font-size:12px;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);color:var(--dim);
+    padding:9px 4px;border-radius:8px;transition:.15s;
+  }
+  .seg button.on{border-color:var(--acid);color:var(--acid);background:rgba(200,255,61,.07)}
+  .field{margin-bottom:13px}
+  .field label{
+    display:block;font-size:10px;letter-spacing:.16em;color:var(--dim);
+    text-transform:uppercase;margin-bottom:5px;
+  }
+  .field input,.field select{
+    width:100%;font-family:inherit;font-size:13px;
+    background:var(--panel);border:1px solid var(--line);
+    color:var(--bone);padding:9px 11px;border-radius:8px;outline:none;
+  }
+  .field input:focus,.field select:focus{border-color:#4a4a55}
+  .field .tip{font-size:10.5px;color:#555;margin-top:5px;line-height:1.6}
+  .modal-status{
+    font-size:11.5px;color:var(--dim);line-height:1.7;
+    background:var(--panel);border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;margin:16px 0;
+  }
+  .modal-status.ok{color:var(--acid-dim);border-color:#2e3a17}
+  .modal-status.err{color:#c08060;border-color:#4a3020}
+  .modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:18px}
+  .modal-hide{display:none !important}
+
+  .next-row{display:flex;justify-content:flex-end;gap:10px;align-items:center}
+  .hint{font-size:11px;color:#555;margin-right:auto}
+
+  /* ---------- Intro / Ending ---------- */
+  .screen{max-width:760px;margin:0 auto;padding:6vh 0 60px}
+  .hero-eyebrow{font-size:11px;letter-spacing:.3em;color:var(--acid-dim);margin-bottom:18px}
+  .hero-title{
+    font-family:Georgia,"Songti SC","STSong",serif;
+    font-size:clamp(38px,6vw,66px);line-height:1.08;font-weight:600;
+    letter-spacing:.02em;margin-bottom:18px;
+  }
+  .hero-title .strike{color:#4a4a52;text-decoration:line-through;text-decoration-color:var(--blood)}
+  .hero-sub{font-size:17px;color:#a9a5a0;max-width:56ch;margin-bottom:34px;line-height:1.7}
+  .hero-sub b{color:var(--blood);font-weight:600}
+
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+  @media(max-width:600px){.facts{grid-template-columns:1fr}}
+  .fact{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .fact .n{font-family:Georgia,serif;font-size:24px;color:var(--bone);font-variant-numeric:tabular-nums}
+  .fact .l{font-size:10px;letter-spacing:.12em;color:var(--dim);margin-top:4px}
+
+  .rules{font-size:13px;color:#8f8b93;line-height:2;margin-bottom:30px}
+  .rules b{color:var(--bone)}
+  .rules .num{color:var(--acid-dim);font-family:Georgia,serif;margin-right:8px}
+
+  .fineprint{font-size:11px;color:#4f4f58;line-height:1.8;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
+
+  /* ending */
+  .grade{
+    font-family:Georgia,"Songti SC",serif;
+    font-size:clamp(32px,5vw,52px);line-height:1.1;margin-bottom:6px;
+  }
+  .grade.g0{color:var(--blood)}
+  .grade.g1{color:#d08a4a}
+  .grade.g2{color:var(--gold)}
+  .grade.g3{color:var(--acid)}
+  .score-line{font-size:13px;color:var(--dim);letter-spacing:.1em;margin-bottom:26px}
+  .score-line b{color:var(--bone);font-size:16px;font-variant-numeric:tabular-nums}
+
+  .compare{width:100%;border-collapse:collapse;margin:22px 0 26px;font-size:13px}
+  .compare th{
+    text-align:left;font-size:10px;letter-spacing:.15em;color:var(--dim);
+    text-transform:uppercase;font-weight:500;
+    padding:8px 0;border-bottom:1px solid var(--line);
+  }
+  .compare td{padding:9px 0;border-bottom:1px solid #1e1e23;font-variant-numeric:tabular-nums}
+  .compare td:first-child{color:var(--dim)}
+  .compare .real{color:#8a6a6a}
+  .compare .you{color:var(--bone);font-weight:600}
+  .compare .win{color:var(--acid)}
+
+  .epilogue{font-size:15px;line-height:1.9;color:#c0bcb2;margin-bottom:24px}
+  .epilogue .hl{color:var(--acid)}
+  .ap-list{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 26px}
+  .ap{
+    font-size:12px;padding:6px 13px;border-radius:99px;
+    border:1px solid #4a2a2a;background:rgba(255,77,77,.07);color:#d98a8a;
+  }
+  .ap.safe{border-color:#2e3a17;background:rgba(200,255,61,.06);color:var(--acid-dim)}
+
+  .end-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+
+  footer{
+    border-top:1px solid var(--line);padding:22px 0 40px;
+    font-size:11px;color:#4a4a52;line-height:1.9;
+  }
+  footer a{color:#6a6a75}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap head-row">
+    <div class="brand">
+      <div class="skull">💀</div>
+      <div>
+        <h1>改命 <span>/ QUIBI</span></h1>
+        <div class="sub">Startup Rebuild · Case 001</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn" id="ai-pill" onclick="openSettings()">AI · 检测中…</button>
+      <button class="btn" id="restart-btn" onclick="restart()">重新开始</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="layout" id="layout" style="display:none">
+    <aside>
+      <div class="card">
+        <div class="card-title">公司状态</div>
+        <div id="stats"></div>
+        <div class="kpi" id="kpis"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">时间线 · 2018.08 → 2020.10</div>
+        <div class="track" id="track"></div>
+        <div class="track-labels"><span>成立</span><span>上线</span><span>终局</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">已触发标记</div>
+        <div id="flags" style="font-size:12px;color:#555">暂无</div>
+      </div>
+    </aside>
+    <main id="stage"></main>
+  </div>
+
+  <div id="screen"></div>
+</div>
+
+<footer class="wrap">
+  基于 loot-drop.io 创业墓地公开资料改编的教育性模拟游戏原型 · 财务模型为简化估算，非真实经营建议 · 推演叙事可由任意 OpenAI 兼容 LLM 生成，但所有数值始终由本地规则计算
+</footer>
+
+<div id="modal" class="modal" style="display:none" onclick="if(event.target===this)closeSettings()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h3>AI 推演引擎</h3>
+    <p class="modal-sub">数字由游戏规则计算，LLM 只负责生成下一阶段的市场叙事，永远不会改动财务与状态数值。</p>
+
+    <div class="seg" id="mode-seg">
+      <button data-mode="proxy" onclick="setMode('proxy')">本地代理（推荐）</button>
+      <button data-mode="direct" onclick="setMode('direct')">浏览器直连</button>
+      <button data-mode="off" onclick="setMode('off')">关闭</button>
+    </div>
+
+    <div id="proxy-fields">
+      <div class="modal-status" id="proxy-status">正在检测本地代理…</div>
+      <p class="field tip" style="margin-bottom:14px">
+        在终端运行 <code>python3 llm_server.py</code>，然后用它提供的地址打开本页。API Key 只存在服务端，不会进入浏览器。
+      </p>
+    </div>
+
+    <div id="direct-fields" class="modal-hide">
+      <div class="field">
+        <label>服务商预设</label>
+        <select id="preset" onchange="applyPreset()">
+          <option value="deepseek">DeepSeek</option>
+          <option value="openai">OpenAI</option>
+          <option value="moonshot">Moonshot</option>
+          <option value="qwen">通义千问</option>
+          <option value="zhipu">智谱 GLM</option>
+          <option value="custom">自定义</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Base URL</label>
+        <input id="cfg-base" type="text" placeholder="https://api.deepseek.com/v1">
+      </div>
+      <div class="field">
+        <label>模型</label>
+        <input id="cfg-model" type="text" placeholder="deepseek-chat">
+      </div>
+      <div class="field">
+        <label>API Key</label>
+        <input id="cfg-key" type="password" placeholder="sk-...">
+        <div class="tip">仅保存在本机浏览器 localStorage。若服务端支持 CORS 才可用；否则请用本地代理。</div>
+      </div>
+    </div>
+
+    <div class="modal-status" id="modal-status" style="display:none"></div>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeSettings()">取消</button>
+      <button class="btn acid" onclick="saveSettings()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   数据层
+   ============================================================ */
+
+const NODES = [
+  {
+    id:1, date:'2018.08', month:0, title:'内容赌注',
+    brief:'洛杉矶。Jeffrey Katzenberg 拿着一个执念融到了第一笔 10 亿美元：人们会在手机上，看 6 到 10 分钟一部的好莱坞级短剧。你要决定，这笔钱烧在哪。',
+    choices:[
+      {t:'买好莱坞', d:'签下斯皮尔伯格、Reese Witherspoon 这个级别的阵容，做「章节电影」。单部成本可达千万美元。', tag:'重资产', hist:true,
+       cash:-50, content:70, product:5, pmf:-5, burn:40,
+       note:'内容库瞬间豪华，但你在为一个尚未被验证的需求，提前支付了最贵的成本。'},
+      {t:'做 UGC', d:'开放创作者上传，算法推荐，平台抽成 30%。像 YouTube，但只收 10 分钟以内。', tag:'轻资产',
+       cash:-20, content:35, pmf:15, product:10, burn:25,
+       note:'内容便宜且量大，但质量参差，很难撑起 5–8 美元的月费。'},
+      {t:'先卖技术', d:'把 Turnstyle（横竖屏无缝切换）授权给流媒体平台和大品牌做广告。', tag:'技术流',
+       cash:-10, content:5, product:45, pmf:5, team:-10, burn:14,
+       note:'现金流压力最小，但公司从「平台」降级为「供应商」，失去了成为 Netflix 的可能。'}
+    ],
+    history:'Katzenberg 把约 10 亿美元砸进内容，签下 Steven Spielberg、Reese Witherspoon 等一线阵容，做 6–10 分钟的「章节式电影」。'
+  },
+  {
+    id:2, date:'2018.11', month:3, title:'谁坐 CEO 的位置',
+    brief:'Katzenberg 是内容人。他需要一个能把公司带到 2000 人规模、能跟华尔街对话的人。',
+    choices:[
+      {t:'请 Meg Whitman', d:'eBay、HP 前 CEO。融资与规模化运营履历顶级——但她没做过内容。', tag:'职业经理人', hist:true,
+       cash:-40, team:15, product:5, pmf:-3,
+       note:'公司拿到了最好的「融资面孔」，内容判断仍然只有一个声音。'},
+      {t:'Katzenberg 自己上', d:'创始人意志最强，决策最快——但没人敢对他说不。', tag:'创始人模式',
+       cash:-10, team:5, product:10, pmf:5,
+       note:'决策变快，但回声室也更厚。'},
+      {t:'找流媒体产品型 CEO', d:'懂推荐、懂留存、懂订阅经济的人。', tag:'产品流',
+       cash:-25, team:20, product:20, pmf:15,
+       note:'公司第一次有人真正对「留存曲线」负责。'}
+    ],
+    history:'Meg Whitman 出任 CEO，与 Katzenberg 组成「好莱坞 + 硅谷」的双头结构。'
+  },
+  {
+    id:3, date:'2019.03', month:7, title:'融资节奏',
+    brief:'产品还没上线，市场已经开始给「手机短剧」定价。你要决定拿多少弹药、背多大的回报压力。',
+    choices:[
+      {t:'一次融 7.5 亿美元', d:'把估值推到 17.5 亿美元。弹药充足，但每一分钱都要求回报。', tag:'高举高打', hist:true,
+       cash:750, flag:'highValuation',
+       note:'你买到了时间，也买到了必须赢的枷锁。'},
+      {t:'分批融 3 亿', d:'先做出数据，再谈下一轮。留出调整方向的空间。', tag:'稳健',
+       cash:300, pmf:8, flag:'lowPressure',
+       note:'估值低一点，但董事会的手也松一点。'},
+      {t:'少融 1.2 亿', d:'小团队跑通模型再扩张。', tag:'精益',
+       cash:120, product:12, pmf:10, burn:-8, flag:'lean',
+       note:'每一笔支出都要被逼问，这既是约束也是清醒。'}
+    ],
+    history:'2019 年再融 7.5 亿美元，累计 17.5 亿美元，成为当时最受瞩目的内容创业公司之一。'
+  },
+  {
+    id:4, date:'2019.07', month:11, title:'产品形态',
+    brief:'产品团队交出了第一版。现在要决定：Quibi 到底在哪些屏幕上存在。这个决定会在一年后杀死你，或者救你。',
+    choices:[
+      {t:'只做手机', d:'锁死竖屏体验，不做电视端、不开放投屏、不允许截图。这是「为手机而生」的信仰。', tag:'原教旨', hist:true,
+       product:15, pmf:-4, flag:'noTV',
+       note:'你亲手关掉了客厅那扇门——而一年后，所有人都在客厅。'},
+      {t:'全端覆盖', d:'手机、平板、电视、投屏全上。客厅场景也拿下。', tag:'全场景',
+       cash:-60, product:10, pmf:12, flag:'tv',
+       note:'工程复杂度上升，但用户在哪你就在哪。'},
+      {t:'先做 Web', d:'网页版先跑，避开应用商店抽成，快速验证。', tag:'轻验证',
+       cash:-20, product:5, pmf:6, flag:'web',
+       note:'验证速度快，但「手机原生」的叙事被稀释了。'}
+    ],
+    history:'上线时只有手机端：没有电视 App，不支持投屏，甚至不允许截图和录屏。'
+  },
+  {
+    id:5, date:'2019.10', month:14, title:'内容采购',
+    brief:'距离上线还有半年。内容库决定第一印象，也决定现金流的死期。',
+    choices:[
+      {t:'一次签 100+ 部', d:'用规模建护城河，确保 4 月上线时片库充足、明星云集。', tag:'规模护城河', hist:true,
+       cash:-30, content:35, burn:6, flag:'bigSlate',
+       note:'片库很满，但没有一部非看不可。'},
+      {t:'先做 10 部试水', d:'小步快跑，用真实完播率决定加码方向。', tag:'数据驱动',
+       cash:-20, content:15, pmf:12, product:5,
+       note:'你保留了「根据数据改主意」的权利。'},
+      {t:'买现成版权', d:'收购别人的片库，快速填充。', tag:'采购',
+       cash:-60, content:25, pmf:5,
+       note:'便宜、快，但没有独家性，也就没有订阅理由。'}
+    ],
+    history:'一次性预订 100 多个项目，在 2020 年 4 月上线前完成备货。'
+  },
+  {
+    id:6, date:'2020.02', month:18, title:'上线前最后 60 天',
+    brief:'营销预算已花，媒体已约好，4 月 6 日的发布会不能改。但你还有最后一点钱，只能押一个方向。',
+    choices:[
+      {t:'全押营销', d:'硬上线，把剩下的钱砸向超级碗级别的曝光，先把名字打出去。', tag:'声量', hist:true,
+       cash:-80, pmf:2,
+       note:'所有人都知道了 Quibi，但知道不等于想要。'},
+      {t:'全押产品', d:'推迟两周，把投屏、社交分享、留存曲线补齐再上。', tag:'产品',
+       cash:-40, product:15, pmf:10, flag:'tv',
+       note:'你补上了那扇门，代价是错过了最大的曝光窗口。'},
+      {t:'全押内容', d:'再补几部头部剧集，保证首周口碑。', tag:'内容',
+       cash:-90, content:15, pmf:5,
+       note:'首周有好剧可看，但产品本身的摩擦力还在。'}
+    ],
+    history:'2020 年 4 月 6 日上线，正好撞上全美封锁——「通勤时看的手机剧」遇上了没人通勤的世界。'
+  },
+  {
+    id:7, date:'2020.04', month:20, title:'试用与定价',
+    brief:'上线第一周，下载量冲上榜单（约 260 万次安装）。现在要决定：怎么把下载变成付费。',
+    choices:[
+      {t:'90 天免费试用', d:'用最长的试用期换增长，赌三个月后他们会留下。叠加 T-Mobile、Pepsi 导流。', tag:'增长优先', hist:true,
+       cash:-90, pmf:-3, flag:'trial90',
+       note:'试用期比「新鲜感」还长——大多数人还没到付费那天就忘了它。'},
+      {t:'7 天试用 + $2.99 首月', d:'低门槛，但不白送。让付费动作发生得更早。', tag:'转化优先',
+       pmf:8, flag:'trial7',
+       note:'更早拿到付费信号，也就能更早知道自己错了。'},
+      {t:'直接收费', d:'相信内容质量，不做促销，维持 $4.99 / $7.99。', tag:'自信',
+       pmf:-10, priceBoost:1.3, flag:'noTrial',
+       note:'定价干净，但转化门槛高得吓人。'}
+    ],
+    history:'上线即提供 90 天免费试用，并与 T-Mobile、Pepsi 做大规模导流；首月约 260 万次安装（第三方估算）。'
+  },
+  {
+    id:8, date:'2020.05', month:21, title:'疫情红利',
+    brief:'全美进入封锁。所有人都在家，对着家里最大的那块屏幕。而你卖的是「通勤时看的手机剧」。这是最残酷的错配。',
+    choices:[
+      {t:'维持原策略', d:'继续强调「地铁、咖啡店、碎片时间」，照常投放户外广告。', tag:'路径依赖', hist:true,
+       cash:-60, pmf:-6, flag:'commute',
+       note:'你花钱提醒一群不出门的人：这是给出门的人用的。'},
+      {t:'转向宅家叙事', d:'把内容重新包装成「在家也能看的小屏幕电影」，上线一起看、弹幕、社交分享。', tag:'及时转向',
+       cash:-40, pmf:16, flag:'social',
+       note:'叙事终于和现实对齐了一次。'},
+      {t:'免费内容引流', d:'每周放一部免费剧，用免费换规模，再想办法变现。', tag:'免费',
+       cash:-20, pmf:9, flag:'freeTier',
+       note:'规模上来了，但「为什么要付费」变得更难回答。'}
+    ],
+    history:'官方把部分失败归因于疫情，但公司仍继续围绕「移动碎片时间」做传播。'
+  },
+  {
+    id:9, date:'2020.07', month:23, title:'补救窗口',
+    brief:'用户数据摆在桌上：客厅场景流失最严重，7 日留存只有两成出头。距离现金耗尽不到 12 个月。',
+    choices:[
+      {t:'坚持移动端', d:'不做投屏——这是我们和 Netflix 的区别。', tag:'信仰', hist:true,
+       pmf:-8, team:-8,
+       note:'坚持差异化，直到差异化变成墓志铭。'},
+      {t:'紧急开放投屏 + 电视 App', d:'承认用户在哪，就去哪。两个月工程换一个场景。', tag:'认错',
+       cash:-50, product:10, pmf:18, flag:'tv',
+       note:'这个功能本该在一年前就存在。'},
+      {t:'全面转向免费 + 广告', d:'放弃订阅，做广告支持的免费短视频平台。', tag:'转型',
+       cash:-70, pmf:10, flag:'freeTier', flag:'adModel',
+       note:'换了一条命，也换掉了一身包袱。'}
+    ],
+    history:'直到 2020 年年中才补上投屏等功能，但用户流失已经不可逆。'
+  },
+  {
+    id:10, date:'2020.09', month:25, title:'终局',
+    brief:'账上还剩最后一点钱。董事会要你给一个答案。',
+    choices:[
+      {t:'关停，退回剩余资金', d:'止损。把剩下的钱还给投资人，结束这场实验。', tag:'止损', hist:true, final:'shutdown'},
+      {t:'卖身', d:'卖给 Roku 或传媒集团，保留团队和内容库，换一个活法。', tag:'并购', final:'sell'},
+      {t:'最后一搏', d:'用剩余现金打一场广告战，赌一次爆发式增长。', tag:'豪赌', final:'gamble'}
+    ],
+    history:'2020 年 10 月 21 日宣布关停，12 月 1 日停服；付费订阅不足 50 万，向投资人返还约 3.5 亿美元。'
+  }
+];
+
+const REAL = {
+  subs: 0.5, months: 26, cashLeft: 350, pmf: 0,
+  text: '2020 年 4 月 6 日上线，10 月 21 日宣布关停，12 月 1 日停服。付费订阅不足 50 万，1.75 亿美元估值归零，向投资人返还约 3.5 亿。'
+};
+
+const ANTIPATTERNS = {
+  nomarket:'无市场需求',
+  burn:'烧钱失控',
+  crushed:'被巨头碾压',
+  unit:'单位经济不成立',
+  product:'产品问题',
+  team:'团队失序'
+};
+
+/* ============================================================
+   状态与模拟
+   ============================================================ */
+
+let S = null;
+let nodeIndex = 0;
+let phase = 'choice'; // choice | result
+let lastChoice = null;
+
+function newState(){
+  return {
+    cash: 1000, product: 10, pmf: 30, content: 0, team: 50,
+    subs: 0, month: 0, burn: 0,
+    launched: false, launchMonth: 20,
+    flags: {}, dead: false, gameOver: false
+  };
+}
+
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+function applyChoice(c){
+  const s = S;
+  if(c.cash) s.cash += c.cash;
+  if(c.product) s.product = clamp(s.product + c.product, 0, 100);
+  if(c.pmf) s.pmf = clamp(s.pmf + c.pmf, 0, 100);
+  if(c.content) s.content = clamp(s.content + c.content, 0, 100);
+  if(c.team) s.team = clamp(s.team + c.team, 0, 100);
+  if(c.burn) s.burn = Math.max(6, s.burn + c.burn);
+  if(c.priceBoost) s.flags.priceBoost = true;
+  if(c.flag) s.flags[c.flag] = true;
+  if(c.final) s.flags.final = c.final;
+}
+
+function targetSubs(){
+  const s = S;
+  const tv = s.flags.tv ? 1.45 : 1;
+  const social = s.flags.social ? 1.3 : 1;
+  const price = s.flags.noTrial ? 0.85 : 1;
+  return 0.4 + 1.9 * (s.pmf/100) * (s.product/100) * (0.5 + s.content/100) * tv * social * price;
+}
+
+function advanceTo(targetMonth){
+  const s = S;
+  while(s.month < targetMonth){
+    s.month++;
+    if(!s.launched && s.month >= s.launchMonth){
+      s.launched = true;
+      s.burn += 6; // 上线后营销与客服成本
+    }
+    s.cash -= s.burn;
+    if(s.launched){
+      const t = targetSubs();
+      s.subs += (t - s.subs) * 0.35;
+      s.cash += s.subs * 6; // 平均 ARPU 约 $6/月
+    }
+    if(s.month % 3 === 0) s.cash -= 6;
+    if(s.cash <= 0){ s.cash = 0; s.dead = true; break; }
+  }
+}
+
+/* ============================================================
+   反模式检测
+   ============================================================ */
+
+function detectAntipatterns(){
+  const s = S;
+  const out = [];
+  if(s.launched && s.pmf < 30) out.push('nomarket');
+  if(s.cash < 320) out.push('burn');
+  if(s.flags.noTV && s.launched) out.push('crushed');
+  if(s.launched && s.subs * 6 < s.burn) out.push('unit');
+  if(s.product < 42) out.push('product');
+  if(s.team < 42) out.push('team');
+  return out;
+}
+
+/* ============================================================
+   推演叙事引擎（规则驱动，可替换为 LLM）
+   ============================================================ */
+
+function composeNarrative(c){
+  const s = S;
+  const paras = [];
+
+  // 1. 决策回声
+  paras.push({cls:'', text:`你选择了「${c.t}」。${c.note || ''}市场不会立刻给你答案，但它会用数据投票。`});
+
+  // 2. 状态观察
+  const obs = [];
+  if(!s.launched){
+    if(s.cash > 900) obs.push('账上弹药充足，你有犯错的空间——但每次犯错都在把这个空间变小。');
+    else if(s.cash > 500) obs.push('现金还能撑一年多，董事会开始盯住每一个季度的里程碑。');
+    else obs.push('现金跑道正在缩短，CFO 已经开始按周汇报。');
+    if(s.content > 60) obs.push(`你手里握着一个 ${s.content} 分的内容库，但它还没有找到要喂给谁。`);
+  } else {
+    const rev = s.subs * 6;
+    if(s.subs < 0.6) obs.push(`付费订阅停在 <b>${fmtSubs(s.subs)}</b>，后台 7 日留存只有两成出头——用户下载了，但没有留下。`);
+    else if(s.subs < 2.5) obs.push(`付费订阅爬到 <b>${fmtSubs(s.subs)}</b>，曲线是正的，但斜率还撑不起这个成本结构。`);
+    else obs.push(`付费订阅达到 <b>${fmtSubs(s.subs)}</b>，增长开始有复利的样子。`);
+    if(rev < s.burn) obs.push(`月收入约 ${rev.toFixed(1)}M，月烧钱 ${s.burn.toFixed(0)}M——单位经济仍然是倒挂的，你每多一个用户就多亏一点。`);
+    else obs.push(`月收入已覆盖烧钱（${rev.toFixed(1)}M vs ${s.burn.toFixed(0)}M）——这是这家公司第一次不靠融资活着。`);
+  }
+
+  // 3. 标记回声
+  if(s.flags.tv && s.launched) obs.push('投屏与电视端打开后，客厅场景的观看时长明显回升——那扇门本该更早打开。');
+  if(s.flags.noTV && s.launched) obs.push('仍然没有电视端。每次用户投诉，客服只能回复「请用手机看」。');
+  if(s.flags.social) obs.push('社交分享带来了第一批自然增长，获客成本开始往下走。');
+  if(s.flags.commute && s.launched) obs.push('「通勤」这个词开始反噬——地铁里没有人。');
+  if(s.flags.freeTier && s.launched) obs.push('免费用户涨得很快，但「为什么要付费」这个问题变得更难回答了。');
+  if(s.flags.adModel) obs.push('广告模式跑起来了，你终于有了一条不依赖订阅的收入曲线。');
+  if(s.flags.lean) obs.push('精益的团队结构让你在每个岔路口都还有转身的余地。');
+
+  paras.push({cls:'', text:obs.join(' ')});
+
+  // 4. 风险预警
+  const risks = detectAntipatterns();
+  if(risks.length){
+    paras.push({cls:'risk', text:`<b>风险信号：</b>${risks.map(k=>ANTIPATTERNS[k]).join(' · ')}。这些正是 loot-drop 尸检库里最高频的死因。`});
+  }
+
+  // 5. 下一步压力
+  const next = NODES[nodeIndex + 1];
+  if(next){
+    paras.push({cls:'', text:`${next.date}，你将面对「${next.title}」。`});
+  }
+
+  return paras;
+}
+
+/* ============================================================
+   渲染
+   ============================================================ */
+
+function fmtMoney(m){
+  const abs = Math.abs(m);
+  if(abs >= 1000) return '$' + (m/1000).toFixed(2) + 'B';
+  return '$' + Math.round(m) + 'M';
+}
+function fmtSubs(v){ return v < 0.1 ? '不足 10 万' : (v).toFixed(1) + 'M'; }
+function runway(){
+  if(S.cash <= 0) return '0 个月';
+  if(!S.launched){
+    if(S.burn <= 0) return '—';
+    return Math.max(1, Math.round(S.cash / S.burn)) + ' 个月（未上线）';
+  }
+  const net = S.burn - S.subs*6;
+  if(net <= 0) return '∞（已盈利）';
+  return Math.max(1, Math.round(S.cash / net)) + ' 个月';
+}
+
+function renderDashboard(){
+  const s = S;
+  const stats = [
+    {n:'产品力', v:s.product, raw:''},
+    {n:'市场契合', v:s.pmf, raw:''},
+    {n:'内容库', v:s.content, raw:''},
+    {n:'团队', v:s.team, raw:''}
+  ];
+  let html = '';
+  stats.forEach(st=>{
+    const cls = st.v < 30 ? 'crit' : st.v < 55 ? 'warn' : '';
+    html += `<div class="stat">
+      <div class="stat-top"><span class="stat-name">${st.n}</span><span class="stat-val">${st.v}</span></div>
+      <div class="bar"><i class="${cls}" style="width:${st.v}%"></i></div>
+    </div>`;
+  });
+  document.getElementById('stats').innerHTML = html;
+
+  const cashCls = s.cash < 300 ? 'crit' : s.cash < 700 ? 'warn' : '';
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi-row"><span class="k">资金</span><span class="v" style="color:${s.cash<300?'var(--blood)':'var(--bone)'}">${fmtMoney(s.cash)}</span></div>
+    <div class="kpi-row"><span class="k">现金跑道</span><span class="v">${runway()}</span></div>
+    <div class="kpi-row"><span class="k">付费订阅</span><span class="v">${s.launched?fmtSubs(s.subs):'未上线'}</span></div>
+    <div class="kpi-row"><span class="k">月烧钱</span><span class="v">${s.burn.toFixed(0)}M</span></div>
+  `;
+
+  // timeline
+  const total = NODES.length;
+  let tr = '';
+  for(let i=0;i<total;i++){
+    const done = i < nodeIndex;
+    const now = i === nodeIndex;
+    tr += `<div class="dot ${done?'done':''} ${now?'now':''}"></div>`;
+    if(i<total-1) tr += `<div class="seg ${done?'done':''}"></div>`;
+  }
+  document.getElementById('track').innerHTML = tr;
+
+  // flags
+  const fl = [];
+  if(s.flags.tv) fl.push(['电视/投屏','good']);
+  if(s.flags.social) fl.push(['社交增长','good']);
+  if(s.flags.adModel) fl.push(['广告模式','good']);
+  if(s.flags.lean) fl.push(['精益','good']);
+  if(s.flags.lowPressure) fl.push(['低估值压力','good']);
+  if(s.flags.noTV) fl.push(['纯移动端','bad']);
+  if(s.flags.commute) fl.push(['通勤叙事','bad']);
+  if(s.flags.trial90) fl.push(['90天试用','bad']);
+  if(s.flags.highValuation) fl.push(['高估值','bad']);
+  if(s.flags.bigSlate) fl.push(['百部片单','bad']);
+  document.getElementById('flags').innerHTML = fl.length
+    ? fl.map(f=>`<span class="flag ${f[1]}">${f[0]}</span>`).join('')
+    : '<span style="color:#555">暂无</span>';
+}
+
+function renderNode(){
+  const n = NODES[nodeIndex];
+  const stage = document.getElementById('stage');
+  let html = `<div class="reveal">
+    <div class="date-tag">${n.date}</div>
+    <h2 class="node-title">${n.title}</h2>
+    <p class="brief">${n.brief}</p>
+    <div class="choices">`;
+  n.choices.forEach((c,i)=>{
+    const marks = [];
+    if(c.cash) marks.push(`<span class="mk ${c.cash>0?'up':'dn'}">资金 ${c.cash>0?'+':''}${c.cash}M</span>`);
+    if(c.content) marks.push(`<span class="mk up">内容 +${c.content}</span>`);
+    if(c.product) marks.push(`<span class="mk ${c.product>0?'up':'dn'}">产品 ${c.product>0?'+':''}${c.product}</span>`);
+    if(c.pmf) marks.push(`<span class="mk ${c.pmf>0?'up':'dn'}">市场契合 ${c.pmf>0?'+':''}${c.pmf}</span>`);
+    if(c.team) marks.push(`<span class="mk ${c.team>0?'up':'dn'}">团队 ${c.team>0?'+':''}${c.team}</span>`);
+    html += `<button class="choice" onclick="choose(${i})">
+      <div class="tag">${c.tag||''}</div>
+      <div class="ct"><span class="idx">${String(i+1).padStart(2,'0')}</span>${c.t}</div>
+      <div class="cd">${c.d}</div>
+      ${marks.length?`<div class="marks">${marks.join('')}</div>`:''}
+    </button>`;
+  });
+  html += `</div>
+    <p class="hint" style="margin-top:16px;font-size:11px;color:#666;line-height:1.7">按 1 / 2 / 3 也可以选择 · 牌面数值是<b style="color:#9a9a9a">决策即时效果</b>，阶段烧钱会在选择后结算</p>
+  </div>`;
+  stage.innerHTML = html;
+}
+
+function choose(i){
+  if(phase !== 'choice') return;
+  const n = NODES[nodeIndex];
+  const c = n.choices[i];
+  if(!c) return;
+
+  lastChoice = c;
+  const beforeCash = S.cash, beforeMonth = S.month;
+  applyChoice(c);
+  phase = 'result';
+
+  // 时间推进：先到本节点的下一节点时间
+  const nextNode = NODES[nodeIndex + 1];
+  const targetMonth = nextNode ? nextNode.month : 26;
+  advanceTo(targetMonth);
+
+  const meta = {
+    months: S.month - beforeMonth,
+    ops: S.cash - beforeCash - (c.cash || 0)
+  };
+
+  renderDashboard();
+  renderResult(c, n, meta);
+}
+
+function renderResult(c, n, meta){
+  const s = S;
+  const stage = document.getElementById('stage');
+
+  let html = `<div class="reveal">
+    <div class="date-tag">${n.date} · 决策已生效</div>
+    <div class="chosen">
+      <div class="lbl">你的选择</div>
+      <div class="val">${c.t}</div>
+    </div>
+    <div class="phase-note">
+      ⏱ 推进 ${meta.months} 个月${c.cash?` · 决策即时${c.cash>0?'进账':'支出'} ${c.cash>0?'+':''}${c.cash}M`:''}${meta.ops?` · 期间运营净支出 ${meta.ops<0?'-':'+'}${Math.abs(Math.round(meta.ops))}M（烧钱与订阅收入相抵）`:''}
+    </div>`;
+
+  // agent panel
+  html += `<div class="agent">
+    <div class="agent-head"><div class="pulse"></div><span id="agent-label">${engineLabel()}</span></div>
+    <div id="agent-body"></div>
+  </div>`;
+
+  // history
+  html += `<div class="history">
+    <div class="hl">💀 历史上，这一步真实发生了什么</div>
+    <p>${n.history}</p>
+  </div>`;
+
+  // actions
+  if(s.dead){
+    html += `<div class="next-row"><span class="hint">现金耗尽，公司提前死亡</span>
+      <button class="btn acid" onclick="showEnding()">查看结局 →</button></div>`;
+  } else if(nodeIndex >= NODES.length - 1){
+    html += `<div class="next-row"><span class="hint">26 个月走完了</span>
+      <button class="btn acid" onclick="showEnding()">查看结局 →</button></div>`;
+  } else {
+    html += `<div class="next-row"><span class="hint">下一站：${NODES[nodeIndex+1].date} ${NODES[nodeIndex+1].title}</span>
+      <button class="btn acid" onclick="nextNode()">继续 →</button></div>`;
+  }
+  html += `</div>`;
+  stage.innerHTML = html;
+  generateNarrative(c, n);
+}
+
+/* ============================================================
+   LLM 推演层
+   ============================================================ */
+
+const PRESETS = {
+  deepseek:{base:'https://api.deepseek.com/v1', model:'deepseek-chat'},
+  openai:{base:'https://api.openai.com/v1', model:'gpt-4o-mini'},
+  moonshot:{base:'https://api.moonshot.cn/v1', model:'moonshot-v1-8k'},
+  qwen:{base:'https://dashscope.aliyuncs.com/compatible-mode/v1', model:'qwen-plus'},
+  zhipu:{base:'https://open.bigmodel.cn/api/paas/v4', model:'glm-4-flash'},
+  custom:{base:'', model:''}
+};
+
+const LLM = {
+  mode:'off',        // proxy | direct | off
+  base:'https://api.deepseek.com/v1',
+  model:'deepseek-chat',
+  key:'',
+  proxyOk:false,
+  lastError:''
+};
+
+function loadLLMConfig(){
+  try{
+    const raw = localStorage.getItem('quibi_llm_cfg');
+    if(raw){
+      const c = JSON.parse(raw);
+      if(c.mode) LLM.mode = c.mode;
+      if(c.base) LLM.base = c.base;
+      if(c.model) LLM.model = c.model;
+      if(c.key) LLM.key = c.key;
+    }
+  }catch(e){}
+}
+
+function persistLLMConfig(){
+  try{
+    localStorage.setItem('quibi_llm_cfg', JSON.stringify({
+      mode:LLM.mode, base:LLM.base, model:LLM.model,
+      key: LLM.mode === 'direct' ? LLM.key : ''
+    }));
+  }catch(e){}
+}
+
+async function checkProxy(){
+  try{
+    const r = await fetch('/api/health', {cache:'no-store'});
+    if(!r.ok) return false;
+    const j = await r.json();
+    LLM.proxyOk = !!j.configured;
+    if(LLM.proxyOk){
+      if(j.model) LLM.model = j.model;
+      if(j.base) LLM.base = j.base;
+    }
+    return LLM.proxyOk;
+  }catch(e){ return false; }
+}
+
+function aiReady(){
+  if(LLM.mode === 'proxy') return LLM.proxyOk;
+  if(LLM.mode === 'direct') return !!LLM.key && !!LLM.base && !!LLM.model;
+  return false;
+}
+
+function updateAIPill(){
+  const pill = document.getElementById('ai-pill');
+  if(!pill) return;
+  if(aiReady()){
+    pill.textContent = 'AI · 已接入';
+    pill.classList.add('acid');
+  }else{
+    pill.textContent = 'AI · 本地引擎';
+    pill.classList.remove('acid');
+  }
+}
+
+function engineLabel(){
+  return LLM.mode === 'off' ? '市场现实 · 本地推演'
+    : LLM.mode === 'proxy' ? '市场现实 · LLM 推演（本地代理）'
+    : '市场现实 · LLM 推演（直连）';
+}
+
+function syncAgentLabel(){
+  const el = document.getElementById('agent-label');
+  if(el) el.textContent = engineLabel();
+}
+
+/* ---- 设置面板 ---- */
+
+let draftMode = 'proxy';
+let draftPreset = 'deepseek';
+
+function openSettings(){
+  loadLLMConfigIntoForm();
+  draftMode = LLM.mode;
+  document.getElementById('modal').style.display = 'flex';
+  setMode(draftMode);
+  refreshProxyStatus();
+}
+
+function closeSettings(){
+  document.getElementById('modal').style.display = 'none';
+}
+
+function loadLLMConfigIntoForm(){
+  document.getElementById('cfg-base').value = LLM.base || '';
+  document.getElementById('cfg-model').value = LLM.model || '';
+  document.getElementById('cfg-key').value = LLM.key || '';
+  const match = Object.keys(PRESETS).find(k => PRESETS[k].base && PRESETS[k].base === LLM.base);
+  document.getElementById('preset').value = match || 'custom';
+}
+
+function setMode(m){
+  draftMode = m;
+  document.querySelectorAll('#mode-seg button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.mode === m);
+  });
+  document.getElementById('proxy-fields').classList.toggle('modal-hide', m !== 'proxy');
+  document.getElementById('direct-fields').classList.toggle('modal-hide', m !== 'direct');
+  const st = document.getElementById('modal-status');
+  if(m !== 'proxy'){ st.style.display = 'none'; st.textContent = ''; }
+  if(m === 'proxy') refreshProxyStatus();
+}
+
+async function refreshProxyStatus(){
+  const el = document.getElementById('proxy-status');
+  if(!el) return;
+  el.className = 'modal-status';
+  el.textContent = '正在检测本地代理…';
+  const ok = await checkProxy();
+  if(ok){
+    el.className = 'modal-status ok';
+    el.textContent = `已连接本地代理 · 模型 ${LLM.model}`;
+  }else{
+    el.className = 'modal-status err';
+    el.textContent = '未检测到本地代理。请运行 python3 llm_server.py，并通过它提供的地址访问本页。';
+  }
+}
+
+function applyPreset(){
+  const k = document.getElementById('preset').value;
+  draftPreset = k;
+  if(PRESETS[k] && PRESETS[k].base){
+    document.getElementById('cfg-base').value = PRESETS[k].base;
+    document.getElementById('cfg-model').value = PRESETS[k].model;
+  }
+}
+
+function saveSettings(){
+  LLM.mode = draftMode;
+  if(draftMode === 'direct'){
+    LLM.base = document.getElementById('cfg-base').value.trim();
+    LLM.model = document.getElementById('cfg-model').value.trim();
+    LLM.key = document.getElementById('cfg-key').value.trim();
+  }
+  persistLLMConfig();
+  updateAIPill();
+  syncAgentLabel();
+  const st = document.getElementById('modal-status');
+  if(draftMode === 'direct'){
+    st.style.display = 'block';
+    st.className = 'modal-status ' + (aiReady()?'ok':'err');
+    st.textContent = aiReady() ? '已保存。下一阶段将使用直连 API 推演。' : '直连配置不完整，将回退到本地引擎。';
+  }
+  if(draftMode === 'proxy' && !LLM.proxyOk){
+    st.style.display = 'block';
+    st.className = 'modal-status err';
+    st.textContent = '未检测到代理，将回退到本地引擎。';
+  }
+  setTimeout(closeSettings, 900);
+}
+
+/* ---- 提示词 ---- */
+
+function buildMessages(c, n){
+  const s = S;
+  const flags = Object.keys(s.flags).filter(k=>k!=='final');
+  const st = [
+    `资金：${fmtMoney(s.cash)}`,
+    `现金跑道：${runway()}`,
+    `月烧钱：${s.burn.toFixed(0)}M`,
+    `付费订阅：${s.launched ? fmtSubs(s.subs) : '尚未上线'}`,
+    `月收入：${s.launched ? (s.subs*6).toFixed(1)+'M' : '0'}`,
+    `产品力：${s.product}/100`,
+    `市场契合：${s.pmf}/100`,
+    `内容库：${s.content}/100`,
+    `团队：${s.team}/100`,
+    `已触发标记：${flags.length ? flags.join('、') : '无'}`
+  ].join('\n');
+  const ap = detectAntipatterns().map(k=>ANTIPATTERNS[k]).join('、') || '暂无明显风险';
+
+  const sys = `你是「市场现实引擎」——一个冷酷、具体、不讨好的创业公司模拟器。
+
+职责：根据公司当前状态和玩家刚做的决策，推演接下来 2–3 个月真实世界会发生什么。
+
+硬性规则：
+1. 只写叙事，绝对不要修改、编造或重新计算任何财务数字。数字只能原样引用我提供给你的状态快照。
+2. 不要安慰玩家，不要给建议，不要总结教训。你只描述发生了什么、市场如何回应。
+3. 必须具体：提到留存率、流失、竞品动作、投资人反应、媒体口径、用户投诉等可观察的现象。
+4. 用中文，第二人称「你」。总长度 150–260 字，分 2–3 个自然段，段间空一行。
+5. 最后一段必须以「风险信号：」开头，从以下选项中挑 1–2 个最可能致命的：无市场需求、烧钱失控、被巨头碾压、单位经济不成立、产品问题、团队失序。
+6. 不要使用 Markdown 标题、列表或加粗。纯文本。`;
+
+  const user = `【时间】${n.date}
+【玩家刚做的决策】${c.t}——${c.d}
+【历史上这一步真实发生了什么】${n.history}
+
+【公司状态快照】
+${st}
+
+【已积累的致命风险】${ap}
+
+请推演接下来 2–3 个月真实世界会发生什么。`;
+
+  return [{role:'system', content:sys},{role:'user', content:user}];
+}
+
+/* ---- 调用 ---- */
+
+async function callLLM(messages, onDelta){
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), 60000);
+  let url, headers = {'Content-Type':'application/json'}, body;
+
+  if(LLM.mode === 'proxy'){
+    url = '/api/chat';
+    body = {messages, temperature:0.85, max_tokens:560};
+  }else{
+    url = LLM.base.replace(/\/+$/,'') + '/chat/completions';
+    headers['Authorization'] = 'Bearer ' + LLM.key;
+    body = {model:LLM.model, messages, stream:true, temperature:0.85, max_tokens:560};
+  }
+
+  let res;
+  try{
+    res = await fetch(url, {method:'POST', headers, body:JSON.stringify(body), signal:ctrl.signal});
+  }catch(err){
+    clearTimeout(timer);
+    throw new Error(err.name === 'AbortError' ? '请求超时' : '网络请求失败（可能是 CORS 或地址错误）');
+  }
+  clearTimeout(timer);
+
+  if(!res.ok){
+    let msg = 'HTTP ' + res.status;
+    try{
+      const j = await res.json();
+      const e = j.error;
+      if(typeof e === 'string') msg = e;
+      else if(e && e.message) msg = e.message;
+      else if(j.message) msg = j.message;
+    }catch(e){}
+    throw new Error(msg);
+  }
+
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = '';
+  while(true){
+    const {done, value} = await reader.read();
+    if(done) break;
+    buf += dec.decode(value, {stream:true});
+    const lines = buf.split('\n');
+    buf = lines.pop();
+    for(const line of lines){
+      const t = line.trim();
+      if(!t.startsWith('data:')) continue;
+      const d = t.slice(5).trim();
+      if(!d || d === '[DONE]') continue;
+      try{
+        const j = JSON.parse(d);
+        const delta = j.choices?.[0]?.delta?.content;
+        if(delta) onDelta(delta);
+      }catch(e){}
+    }
+  }
+  // 兼容非流式响应
+  if(buf.trim().startsWith('{')){
+    try{
+      const j = JSON.parse(buf);
+      const txt = j.choices?.[0]?.message?.content;
+      if(txt) onDelta(txt);
+    }catch(e){}
+  }
+}
+
+/* ---- 渲染 ---- */
+
+async function generateNarrative(c, n){
+  const body = document.getElementById('agent-body');
+  if(!body) return;
+
+  if(!aiReady()){
+    ruleNarrative(c, body, false);
+    return;
+  }
+
+  body.innerHTML = `<div class="thinking"><i></i><i></i><i></i></div>
+    <p class="think-text">正在推演下一阶段…</p>`;
+
+  let acc = '';
+  let started = false;
+  let canPaint = false;
+
+  // 让「正在推演」至少可见 420ms，避免首字到达太快造成闪烁
+  const gate = setTimeout(()=>{
+    canPaint = true;
+    if(acc && !started){ started = true; body.innerHTML = ''; paintStream(body, acc); }
+  }, 420);
+
+  try{
+    await callLLM(buildMessages(c, n), delta=>{
+      acc += delta;
+      if(!canPaint) return;
+      if(!started){ started = true; body.innerHTML = ''; }
+      paintStream(body, acc);
+    });
+    clearTimeout(gate);
+    if(!acc.trim()) throw new Error('模型返回空内容');
+    if(!started){ body.innerHTML = ''; paintStream(body, acc); }
+    finalizeStream(body);
+  }catch(err){
+    clearTimeout(gate);
+    LLM.lastError = err.message;
+    body.innerHTML = '';
+    const note = document.createElement('div');
+    note.className = 'ai-note';
+    note.textContent = 'AI 推演失败：' + err.message + '。已切换到本地引擎。';
+    body.appendChild(note);
+    ruleNarrative(c, body, true);
+    updateAIPill();
+  }
+}
+
+function paintStream(body, text){
+  const parts = text.split(/\n\s*\n/);
+  while(parts.length && !parts[parts.length-1].trim()) parts.pop();
+  for(let i=0;i<parts.length;i++){
+    let el = body.children[i];
+    if(!el){
+      el = document.createElement('p');
+      body.appendChild(el);
+    }
+    el.textContent = parts[i];
+    el.className = /^风险信号[：:]/.test(parts[i].trim()) ? 'risk' : '';
+    if(i === parts.length-1) el.classList.add('streaming');
+    else el.classList.remove('streaming');
+  }
+  while(body.children.length > parts.length) body.lastChild.remove();
+  if(parts.length) body.children[parts.length-1].classList.add('streaming');
+}
+
+function finalizeStream(body){
+  body.querySelectorAll('p').forEach(p=>{
+    p.classList.remove('streaming');
+    p.style.opacity = 1;
+  });
+}
+
+function ruleNarrative(c, body, append){
+  const paras = composeNarrative(c);
+  if(!append) body.innerHTML = '';
+  paras.forEach((p, i)=>{
+    const el = document.createElement('p');
+    el.className = p.cls || '';
+    el.innerHTML = p.text;
+    el.style.animationDelay = (0.1 + i*0.16) + 's';
+    body.appendChild(el);
+  });
+}
+
+function nextNode(){
+  nodeIndex++;
+  phase = 'choice';
+  renderDashboard();
+  renderNode();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============================================================
+   结局
+   ============================================================ */
+
+function computeScore(){
+  const s = S;
+  let score = 0;
+  score += Math.min(s.subs/3.5, 1) * 50;
+  score += Math.min(Math.max(s.month - 26, 0)/24, 1) * 15;
+  score += Math.min(Math.max(s.cash,0)/1750, 1) * 13;
+  score += (s.pmf/100) * 22;
+  if(s.dead) score = Math.min(score, 20);
+  return Math.round(clamp(score, 0, 100));
+}
+
+function gradeOf(score){
+  if(score >= 68) return {cls:'g3', name:'改命成功', sub:'你让这家公司活成了另一家公司'};
+  if(score >= 35) return {cls:'g2', name:'部分改命', sub:'你改变了轨迹，但没能改变结局的方向'};
+  if(score >= 12) return {cls:'g1', name:'延缓死亡', sub:'你让它多活了几天，但没能给它一条命'};
+  return {cls:'g0', name:'历史重演', sub:'同样的错误，同样的墓志铭'};
+}
+
+function showEnding(){
+  const s = S;
+  const score = computeScore();
+  const g = gradeOf(score);
+  const ap = detectAntipatterns();
+  const screens = document.getElementById('screen');
+  document.getElementById('layout').style.display = 'none';
+
+  // 结局叙事
+  let epi = '';
+  const final = s.flags.final;
+  if(s.dead){
+    epi = `现金在 ${dateOf(s.month)} 耗尽。公司没有等到你的下一个决定。它死得比历史更早——不是因为运气，而是因为你把赌注押在了同一个方向上，只是下注更快。`;
+  } else if(final === 'sell'){
+    const sale = Math.round(s.content*2.5 + s.subs*90 + s.product*1.5 + s.team*0.5);
+    epi = `你把公司卖掉了。作价约 <span class="hl">${fmtMoney(sale)}</span>。团队和片库找到了新家——这不算赢，但你从墓地里捞回了一些东西。历史上，Roku 在 2021 年初接手了 Quibi 的内容库。`;
+  } else if(final === 'gamble'){
+    if(score >= 40) epi = `你把最后一点钱全砸进了增长。赌赢了：订阅曲线终于翘了起来，公司活过了 2020。`;
+    else epi = `你把最后一点钱全砸进了增长。广告打完了，用户来了又走，账上归零。`;
+  } else {
+    if(score >= 68) epi = `你选择了关停。但这一次，不是一次失败的仓皇撤退——账上还有钱，用户还在，团队完整。你把一个已经跑通的产品体面地结束，或者交给了能接住它的人。`;
+    else if(score >= 35) epi = `你选择了关停。账面比历史好看一些：订阅更多，现金剩余更多，死得更体面。`;
+    else epi = `你选择了关停。2020 年 10 月，董事会宣布终止运营。这一次，没有人感到意外。`;
+  }
+
+  const realSubs = 0.5, realCash = 350;
+  const winSubs = s.subs > realSubs, winCash = s.cash > realCash;
+
+  screens.innerHTML = `<div class="screen reveal">
+    <div class="hero-eyebrow">结局 · CASE 001</div>
+    <h2 class="grade ${g.cls}">${g.name}</h2>
+    <div class="score-line">改命度 <b>${score}</b> / 100 · ${g.sub}</div>
+
+    <p class="epilogue">${epi}</p>
+
+    <table class="compare">
+      <tr><th>指标</th><th>真实历史</th><th>你的平行宇宙</th></tr>
+      <tr>
+        <td>付费订阅</td>
+        <td class="real">${fmtSubs(realSubs)}</td>
+        <td class="you ${winSubs?'win':''}">${fmtSubs(s.subs)} ${winSubs?'▲':''}</td>
+      </tr>
+      <tr>
+        <td>存活时长</td>
+        <td class="real">26 个月</td>
+        <td class="you ${s.month>26?'win':''}">${s.month} 个月 ${s.month>26?'▲':''}</td>
+      </tr>
+      <tr>
+        <td>剩余资金</td>
+        <td class="real">${fmtMoney(realCash)}</td>
+        <td class="you ${winCash?'win':''}">${fmtMoney(s.cash)} ${winCash?'▲':''}</td>
+      </tr>
+      <tr>
+        <td>市场契合</td>
+        <td class="real">极低</td>
+        <td class="you ${s.pmf>50?'win':''}">${s.pmf} / 100 ${s.pmf>50?'▲':''}</td>
+      </tr>
+    </table>
+
+    <div class="card-title" style="margin-bottom:10px">尸检报告 · 你死于哪些反模式</div>
+    <div class="ap-list">
+      ${ap.length
+        ? ap.map(k=>`<span class="ap">${ANTIPATTERNS[k]}</span>`).join('')
+        : '<span class="ap safe">没有命中致命反模式 —— 罕见</span>'}
+    </div>
+
+    <div class="history" style="margin-bottom:26px">
+      <div class="hl">💀 真实世界的结局</div>
+      <p>${REAL.text}</p>
+    </div>
+
+    <div class="end-actions">
+      <button class="btn acid" onclick="restart()">再救一次</button>
+      <button class="btn" onclick="window.open('https://www.loot-drop.io/','_blank')">去看看真实的创业墓地 ↗</button>
+    </div>
+  </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function dateOf(month){
+  const y = 2018 + Math.floor((7+month)/12);
+  const m = ((7+month)%12)+1;
+  return `${y}.${String(m).padStart(2,'0')}`;
+}
+
+/* ============================================================
+   开场
+   ============================================================ */
+
+function showIntro(){
+  document.getElementById('layout').style.display = 'none';
+  document.getElementById('screen').innerHTML = `<div class="screen reveal">
+    <div class="hero-eyebrow">STARTUP REBUILD · 重生模式</div>
+    <h1 class="hero-title">你能救活<br><span class="strike">Quibi</span> 吗？</h1>
+    <p class="hero-sub">
+      2020 年 4 月 6 日，一家融了 <b>17.5 亿美元</b> 的公司上线。
+      六个月后，它关停了。付费订阅不足 <b>50 万</b>，估值归零。
+      <br><br>
+      现在，你被放回 2018 年 8 月。你有 26 个月、10 个关键决策点。
+      每一个选择都会改变市场对你的回应。
+    </p>
+    <div class="facts">
+      <div class="fact"><div class="n">$1.75B</div><div class="l">融资金额</div></div>
+      <div class="fact"><div class="n">6 个月</div><div class="l">从上线到宣布关停</div></div>
+      <div class="fact"><div class="n">&lt;500K</div><div class="l">付费订阅</div></div>
+    </div>
+    <div class="rules">
+      <div><span class="num">01</span>每个节点 <b>三选一</b>。选项没有标准答案——只有当时的合理性与事后的代价。</div>
+      <div><span class="num">02</span>决策后，<b>市场推演引擎</b>会根据公司状态生成下一阶段的现实反馈。</div>
+      <div><span class="num">03</span>结局按 <b>改命度</b> 评分：用户、存活时长、剩余资本、真实市场契合。</div>
+    </div>
+    <button class="btn acid" style="padding:11px 26px;font-size:14px" onclick="startGame()">进入 2018 年 8 月 →</button>
+    <p class="fineprint">
+      本作是「重生模式」的可玩原型：用真实死因数据构造决策节点，用规则引擎计算所有数值。
+      推演叙事默认由本地引擎生成；点击右上角「AI」可接入任意 OpenAI 兼容 LLM（推荐配合同目录的 llm_server.py 使用）。
+      无论接入哪种模型，财务与状态数值始终由本地规则计算，AI 无法改动。
+    </p>
+  </div>`;
+}
+
+function startGame(){
+  S = newState();
+  nodeIndex = 0;
+  phase = 'choice';
+  lastChoice = null;
+  document.getElementById('screen').innerHTML = '';
+  document.getElementById('layout').style.display = 'grid';
+  renderDashboard();
+  renderNode();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restart(){
+  showIntro();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* 键盘 */
+document.addEventListener('keydown', e=>{
+  if(phase !== 'choice') return;
+  const k = parseInt(e.key,10);
+  if(k>=1 && k<=3) choose(k-1);
+});
+
+/* 启动 */
+loadLLMConfig();
+(async ()=>{
+  const saved = !!localStorage.getItem('quibi_llm_cfg');
+  const ok = await checkProxy();
+  if(ok){
+    // 首次访问默认用代理；已保存过偏好则尊重用户选择
+    if(!saved) LLM.mode = 'proxy';
+  }else if(LLM.mode === 'proxy'){
+    LLM.mode = 'off';
+  }
+  updateAIPill();
+  syncAgentLabel();
+})();
+
+showIntro();
+</script>
+</body>
+</html>
