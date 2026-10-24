@@ -364,6 +364,31 @@
   .ap-list{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}
   .ap-group{margin-bottom:26px}
 
+  /* 决策回放时间线 */
+  .tl{position:relative;margin:8px 0 12px}
+  .tl::before{content:'';position:absolute;left:4px;top:8px;bottom:8px;border-left:1px solid var(--line)}
+  .tl-row{position:relative;padding:0 0 18px 22px}
+  .tl-row:last-child{padding-bottom:0}
+  .tl-row>i{position:absolute;left:0;top:7px;width:9px;height:9px;border-radius:99px;background:var(--bg,#0f0f12);border:1px solid #3a3a42;box-sizing:border-box}
+  .tl-row.df>i{border-color:var(--gold)}
+  .tl-row.pv>i{border-color:var(--acid);background:var(--acid)}
+  .tl-row.dead>i{border-color:var(--blood);background:var(--blood)}
+  .tl-meta{font-size:13px;color:var(--bone);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tl-date{color:var(--dim);font-variant-numeric:tabular-nums}
+  .tl-badge{font-size:10px;letter-spacing:.08em;padding:1px 7px;border-radius:99px;border:1px solid var(--gold);color:var(--gold)}
+  .tl-badge.pv{border-color:var(--acid-dim);color:var(--acid);background:rgba(200,255,61,.06)}
+  .tl-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+  .tl-chip{font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:#b9b5a9}
+  .tl-chip.hist{color:var(--dim);background:transparent}
+  .tl-row.pv .tl-chip.you{border-color:#3a4a1c;color:var(--acid)}
+  .tl-note{margin-top:7px;font-size:11px;color:var(--acid-dim);line-height:1.7}
+  .tl-foot{margin:0 0 26px;padding-top:12px;border-top:1px dashed var(--line);font-size:11px;color:var(--dim);line-height:1.8}
+  .tl-leg{display:inline-flex;align-items:center;gap:4px;margin-right:12px}
+  .tl-leg i{width:7px;height:7px;border-radius:99px;display:inline-block}
+  .tl-leg .l-n{border:1px solid #3a3a42}
+  .tl-leg .l-w{background:var(--gold)}
+  .tl-leg .l-b{background:var(--acid)}
+
   .end-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 
   footer{
@@ -541,6 +566,7 @@ const QUIBI_NODES = [
        cash:-20, product:5, pmf:6, flag:'web',
        note:'验证速度快，但「手机原生」的叙事被稀释了。'}
     ],
+    pivotal:'事后看，这是整条时间线上最贵的一个决定——疫情来临时，有客厅那块屏幕的公司活，没有的死。',
     history:'上线时只有手机端：没有电视 App，不支持投屏，甚至不允许截图和录屏。'
   },
   {
@@ -605,6 +631,7 @@ const QUIBI_NODES = [
        cash:-20, pmf:9, flag:'freeTier',
        note:'规模上来了，但「为什么要付费」变得更难回答。'}
     ],
+    pivotal:'需求没有消失，只是从地铁挪到了客厅。这是全局最后一次低成本转身的机会。',
     history:'官方把部分失败归因于疫情，但公司仍继续围绕「移动碎片时间」做传播。'
   },
   {
@@ -621,6 +648,7 @@ const QUIBI_NODES = [
        cash:-70, pmf:10, flag:'freeTier', flag:'adModel',
        note:'换了一条命，也换掉了一身包袱。'}
     ],
+    pivotal:'留存的失血此时还止得住——再晚三个月，补什么功能都来不及了。',
     history:'直到 2020 年年中才补上投屏等功能，但用户流失已经不可逆。'
   },
   {
@@ -655,6 +683,7 @@ const HOPIN_NODES = [
        cash:-1, product:12, content:8, pmf:10, burn:1, flag:'creatorTool',
        note:'你的产品不依赖「活动」这个场景——这在两年后会救你的命。'}
     ],
+    pivotal:'「服务活动」还是「服务播出去」——两年后需求退潮时，这是生与死的分界线。',
     history:'Hopin 上线时就是一个「全能活动平台」：主会场、分会场、展位、配对、聊天全都有，靠一件事打动客户——上线快、不用装软件。'
   },
   {
@@ -751,6 +780,7 @@ const HOPIN_NODES = [
        cash:-20, product:12, pmf:6, burn:2, flag:'inPerson',
        note:'你跟着人群回到了线下，但那里已经站着 Eventbrite。'}
     ],
+    pivotal:'线下回来的这一刻，押「混合」是续命，押「工具」是换命。',
     history:'Hopin 把「混合活动」当作下一增长曲线，继续投入产品与销售，但线下回归后，客户对纯线上活动的付费意愿快速下降。'
   },
   {
@@ -783,6 +813,7 @@ const HOPIN_NODES = [
        cash:-6, team:-30, burn:-18, pmf:6, flag:'breakeven',
        note:'公司活下来了，但也失去了增长——你只是把死亡往后推了。'}
     ],
+    pivotal:'现金只剩 9 个月时，聚焦比勇气值钱。',
     history:'Hopin 在 2022 年下半年继续收缩，把重心转向 StreamYard，同时为活动业务寻找买家。'
   },
   {
@@ -989,7 +1020,7 @@ function newState(){
     cash: i.cash, product: i.product, pmf: i.pmf, content: i.content, team: i.team,
     subs: 0, month: 0, burn: i.burn, arpu: CASE.arpu,
     launched: false, launchMonth: CASE.launchMonth,
-    flags: {}, dead: false, gameOver: false
+    flags: {}, dead: false, gameOver: false, history: []
   };
 }
 
@@ -1222,6 +1253,7 @@ function choose(i){
 
   lastChoice = c;
   const beforeCash = S.cash, beforeMonth = S.month;
+  S.history.push({idx: nodeIndex, ci: i});
   applyChoice(c);
   phase = 'result';
 
@@ -1700,6 +1732,32 @@ function showEnding(){
   const epi = CASE.ending(s, score);
   const rows = CASE.compare(s, score);
 
+  // 决策回放
+  const tlRows = s.history.map(h=>{
+    const nd = NODES[h.idx];
+    const mine = nd.choices[h.ci];
+    const hist = nd.choices.find(c=>c.hist);
+    const same = !!mine.hist;
+    const cls = same ? '' : (nd.pivotal ? 'pv' : 'df');
+    const badge = same ? '' : nd.pivotal
+      ? '<span class="tl-badge pv">关键分叉</span>'
+      : '<span class="tl-badge">分叉</span>';
+    const chips = same
+      ? `<span class="tl-chip hist">与历史一致 · ${mine.t}</span>`
+      : `<span class="tl-chip you">你 · ${mine.t}</span><span class="tl-chip hist">历史 · ${hist ? hist.t : '—'}</span>`;
+    const note = (!same && nd.pivotal) ? `<div class="tl-note">${nd.pivotal}</div>` : '';
+    return `<div class="tl-row ${cls}"><i></i>
+      <div class="tl-meta"><span class="tl-date">${nd.date}</span>${nd.title}${badge}</div>
+      <div class="tl-chips">${chips}</div>${note}</div>`;
+  }).join('');
+  const divCount = s.history.filter(h=>!NODES[h.idx].choices[h.ci].hist).length;
+  const deadRow = s.dead
+    ? `<div class="tl-row dead"><i></i><div class="tl-meta"><span class="tl-date">${dateOf(s.month)}</span>现金耗尽，公司提前死亡</div></div>`
+    : '';
+  const tlFoot = s.dead
+    ? `走了 ${s.history.length} / ${NODES.length} 个节点 · 与历史分道扬镳 ${divCount} 次`
+    : `共 ${NODES.length} 个节点 · 与历史分道扬镳 ${divCount} 次${divCount === 0 ? ' · 你完整重演了历史' : ''}`;
+
   screens.innerHTML = `<div class="screen reveal">
     <div class="hero-eyebrow">结局 · ${CASE.caseNo}</div>
     <h2 class="grade ${g.cls}">${g.name}</h2>
@@ -1715,6 +1773,13 @@ function showEnding(){
         <td class="you ${r.win?'win':''}">${r.you} ${r.win?'▲':''}</td>
       </tr>`).join('')}
     </table>
+
+    <div class="card-title" style="margin-bottom:6px">决策回放 · 你在哪里和历史分道扬镳</div>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:12px">
+      <span class="tl-leg"><i class="l-n"></i>与历史一致</span><span class="tl-leg"><i class="l-w"></i>分叉点</span><span class="tl-leg"><i class="l-b"></i>关键分叉</span>
+    </div>
+    <div class="tl">${tlRows}${deadRow}</div>
+    <div class="tl-foot">${tlFoot}</div>
 
     <div class="card-title" style="margin-bottom:6px">尸检报告 · 反模式对照</div>
     <div class="ap-group">
