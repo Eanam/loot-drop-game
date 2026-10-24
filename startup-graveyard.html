@@ -383,6 +383,8 @@
   .tl-row.pv .tl-chip.you{border-color:#3a4a1c;color:var(--acid)}
   .tl-note{margin-top:7px;font-size:11px;color:var(--acid-dim);line-height:1.7}
   .tl-foot{margin:0 0 26px;padding-top:12px;border-top:1px dashed var(--line);font-size:11px;color:var(--dim);line-height:1.8}
+  .bridge{font-size:12px;color:var(--acid-dim);margin:0 0 10px;line-height:1.7}
+  .chain{display:inline-block;margin-top:8px;font-size:11px;color:var(--gold);border:1px solid rgba(200,164,74,.4);padding:2px 8px;border-radius:3px;letter-spacing:.3px}
   .tl-leg{display:inline-flex;align-items:center;gap:4px;margin-right:12px}
   .tl-leg i{width:7px;height:7px;border-radius:99px;display:inline-block}
   .tl-leg .l-n{border:1px solid #3a3a42}
@@ -554,6 +556,7 @@ const QUIBI_NODES = [
   },
   {
     id:4, date:'2019.07', month:11, title:'产品形态',
+    bridge:'上一轮，你选择了「{prev}」。钱有了去向，现在轮到产品本身——这个决定会安静地在一年后结账。',
     brief:'产品团队交出了第一版。现在要决定：Quibi 到底在哪些屏幕上存在。这个决定会在一年后杀死你，或者救你。',
     choices:[
       {t:'只做手机', d:'锁死竖屏体验，不做电视端、不开放投屏、不允许截图。这是「为手机而生」的信仰。', tag:'原教旨', hist:true,
@@ -599,6 +602,11 @@ const QUIBI_NODES = [
        cash:-90, content:15, pmf:5,
        note:'首周有好剧可看，但产品本身的摩擦力还在。'}
     ],
+    swap:[{when:'tv', index:1, choice:
+      {t:'全押留存', d:'推迟两周，把社交分享、推荐和留存曲线补齐再上。', tag:'产品',
+       cash:-40, product:12, pmf:12,
+       note:'投屏你早就有了——这次补的是让人留下来的理由。'}
+    }],
     history:'2020 年 4 月 6 日上线，正好撞上全美封锁——「通勤时看的手机剧」遇上了没人通勤的世界。'
   },
   {
@@ -610,6 +618,7 @@ const QUIBI_NODES = [
        note:'试用期比「新鲜感」还长——大多数人还没到付费那天就忘了它。'},
       {t:'7 天试用 + $2.99 首月', d:'低门槛，但不白送。让付费动作发生得更早。', tag:'转化优先',
        pmf:8, flag:'trial7',
+       mods:[{when:'bigSlate', pmf:4, note:'片库够厚，低门槛转化才有底气——试用结束有人续费。'}],
        note:'更早拿到付费信号，也就能更早知道自己错了。'},
       {t:'直接收费', d:'相信内容质量，不做促销，维持 $4.99 / $7.99。', tag:'自信',
        pmf:-10, priceBoost:1.3, flag:'noTrial',
@@ -619,6 +628,7 @@ const QUIBI_NODES = [
   },
   {
     id:8, date:'2020.05', month:21, title:'疫情红利',
+    bridge:'上一轮，你选择了「{prev}」。然后世界变了：所有人被关进客厅，而你卖的是通勤时的碎片时间。',
     brief:'全美进入封锁。所有人都在家，对着家里最大的那块屏幕。而你卖的是「通勤时看的手机剧」。这是最残酷的错配。',
     choices:[
       {t:'维持原策略', d:'继续强调「地铁、咖啡店、碎片时间」，照常投放户外广告。', tag:'路径依赖', hist:true,
@@ -626,6 +636,7 @@ const QUIBI_NODES = [
        note:'你花钱提醒一群不出门的人：这是给出门的人用的。'},
       {t:'转向宅家叙事', d:'把内容重新包装成「在家也能看的小屏幕电影」，上线一起看、弹幕、社交分享。', tag:'及时转向',
        cash:-40, pmf:16, flag:'social',
+       mods:[{when:'tv', pmf:6, note:'你早就在那块屏幕上——宅家叙事直接有了落点。'}],
        note:'叙事终于和现实对齐了一次。'},
       {t:'免费内容引流', d:'每周放一部免费剧，用免费换规模，再想办法变现。', tag:'免费',
        cash:-20, pmf:9, flag:'freeTier',
@@ -636,18 +647,25 @@ const QUIBI_NODES = [
   },
   {
     id:9, date:'2020.07', month:23, title:'补救窗口',
+    bridge:'上一轮，你选择了「{prev}」。数据已经摆在桌上：留存在失血，现金在以月为单位倒计时。',
     brief:'用户数据摆在桌上：客厅场景流失最严重，7 日留存只有两成出头。距离现金耗尽不到 12 个月。',
     choices:[
       {t:'坚持移动端', d:'不做投屏——这是我们和 Netflix 的区别。', tag:'信仰', hist:true,
        pmf:-8, team:-8,
+       mods:[{when:'noTV', pmf:-6, note:'你一年前亲手关上的门，现在成了墙。'}],
        note:'坚持差异化，直到差异化变成墓志铭。'},
       {t:'紧急开放投屏 + 电视 App', d:'承认用户在哪，就去哪。两个月工程换一个场景。', tag:'认错',
        cash:-50, product:10, pmf:18, flag:'tv',
        note:'这个功能本该在一年前就存在。'},
       {t:'全面转向免费 + 广告', d:'放弃订阅，做广告支持的免费短视频平台。', tag:'转型',
-       cash:-70, pmf:10, flag:'freeTier', flag:'adModel',
+       cash:-70, pmf:10, flag:'adModel',
        note:'换了一条命，也换掉了一身包袱。'}
     ],
+    swap:[{when:'tv', index:1, choice:
+      {t:'把电视端做深', d:'那块屏幕你已经在上面了，现在把客厅场景的完播率做到手机同级。', tag:'深耕',
+       cash:-30, product:8, pmf:10,
+       note:'功能早就在了——难的是让人真的用它。'}
+    }],
     pivotal:'留存的失血此时还止得住——再晚三个月，补什么功能都来不及了。',
     history:'直到 2020 年年中才补上投屏等功能，但用户流失已经不可逆。'
   },
@@ -736,6 +754,7 @@ const HOPIN_NODES = [
   },
   {
     id:5, date:'2021.06', month:15, title:'组织扩张',
+    bridge:'上一轮，你选择了「{prev}」。钱到账了，投资人看着你——现在他们要看的是规模。',
     brief:'你已经有 300 人。销售说，要覆盖全球需求还需要 500 人。招聘团队把 offer 发得像印钞。',
     choices:[
       {t:'一年扩到 1200 人', d:'按「需求会一直涨」来配置组织。销售、市场、工程全线扩编。', tag:'超配', hist:true,
@@ -775,6 +794,7 @@ const HOPIN_NODES = [
        note:'你相信线上会成为线下的一部分。事后看，大多数人只是回到了线下。'},
       {t:'转向创作者推流工具', d:'放弃「活动平台」的叙事，去服务一个更朴素的需求：把内容播出去。', tag:'转向',
        cash:-10, product:10, pmf:14, burn:-4, flag:'creatorTool',
+       mods:[{when:'creatorTool', pmf:6, note:'你从第一天起就在造这个工具——现在只是把故事说圆。'}],
        note:'你放弃了最大的故事，去抓住一个真正还在增长的东西。'},
       {t:'转做线下活动的注册与票务 SaaS', d:'跟着人群回到线下，做签到、票务、胸牌。', tag:'跟随',
        cash:-20, product:12, pmf:6, burn:2, flag:'inPerson',
@@ -792,6 +812,7 @@ const HOPIN_NODES = [
        note:'你只切掉了指甲。三个月后，你还得再切一次。'},
       {t:'一次裁 40%', d:'承认需求变了，一次性把成本结构降到新现实。', tag:'狠手',
        cash:-8, team:-25, burn:-20, pmf:5, flag:'deepCut',
+       mods:[{when:'overhire', team:-5, pmf:-3, note:'扩张时按「永久需求」配的人，裁起来每一刀都更深。'}],
        note:'很痛，但你买到了 18 个月的跑道，和一次真正重新做决定的机会。'},
       {t:'不裁，赌下半年反弹', d:'线下活动会回来，混合活动会起来，熬过去就好。', tag:'赌反弹',
        pmf:-10, flag:'noCut',
@@ -801,6 +822,7 @@ const HOPIN_NODES = [
   },
   {
     id:9, date:'2022.08', month:29, title:'保住哪一个',
+    bridge:'上一轮，你选择了「{prev}」。但裁员没有买来增长，只买来了时间——现在连时间也快用完了。',
     brief:'现金只够 9 个月。活动业务在萎缩，但 StreamYard 还在增长。你必须决定：这家公司到底是谁。',
     choices:[
       {t:'继续裁员，两边都保', d:'再裁一轮，把组织压到只剩维持运转的人，试图同时维持活动平台和推流工具。', tag:'两边都要', hist:true,
@@ -811,8 +833,14 @@ const HOPIN_NODES = [
        note:'你亲手结束了那个让你成为独角兽的故事，并保住了真正有用的资产。'},
       {t:'收缩到现金流为正', d:'砍到 400 人，停止一切扩张，只求不再失血。', tag:'止血',
        cash:-6, team:-30, burn:-18, pmf:6, flag:'breakeven',
+       mods:[{when:'disciplined', pmf:4, note:'你一直留着调整的余地——现在它变成了转身的速度。'}],
        note:'公司活下来了，但也失去了增长——你只是把死亡往后推了。'}
     ],
+    swap:[{when:'!streamyard', index:1, chip:'承接 2021.03「不融 C 轮，全部自研」', choice:
+      {t:'卖掉活动业务，聚焦自研产品线', d:'承认「活动平台」的故事结束了，把资源压到还有现金流的自研产品上。', tag:'聚焦',
+       cash:25, team:-10, burn:-12, pmf:10, flag:'focusStreamyard',
+       note:'没有 StreamYard 可卖——但你仍然可以结束那个故事，保住亲手造的东西。'}
+    }],
     pivotal:'现金只剩 9 个月时，聚焦比勇气值钱。',
     history:'Hopin 在 2022 年下半年继续收缩，把重心转向 StreamYard，同时为活动业务寻找买家。'
   },
@@ -1020,11 +1048,56 @@ function newState(){
     cash: i.cash, product: i.product, pmf: i.pmf, content: i.content, team: i.team,
     subs: 0, month: 0, burn: i.burn, arpu: CASE.arpu,
     launched: false, launchMonth: CASE.launchMonth,
-    flags: {}, dead: false, gameOver: false, history: []
+    flags: {}, flagSrc: {}, dead: false, gameOver: false, history: []
   };
 }
 
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+function condHolds(when){ return when.startsWith('!') ? !S.flags[when.slice(1)] : !!S.flags[when]; }
+
+/* 生效选项：原始选项 + swap 条件替换 + mods 数值传导（加法式，多个匹配可叠加） */
+function effectiveChoices(n){
+  let list = n.choices.slice();
+  (n.swap || []).forEach(sw=>{
+    if(condHolds(sw.when)) list[sw.index] = Object.assign({_swapped:true, _chip:sw.chip, _src:(sw.when[0]==='!'?null:sw.when)}, sw.choice);
+  });
+  return list.map(c=>{
+    if(!c.mods) return c;
+    const hit = c.mods.filter(m=>condHolds(m.when));
+    if(!hit.length) return c;
+    const out = Object.assign({}, c, {_modded:true, _src:(hit[0].when[0]==='!'?null:hit[0].when)});
+    hit.forEach(m=>{
+      ['cash','burn','product','pmf','content','team'].forEach(k=>{
+        if(typeof m[k]==='number') out[k] = (out[k]||0) + m[k];
+      });
+      if(m.note) out.note = m.note;
+    });
+    return out;
+  });
+}
+
+function chainChip(c){
+  if(!c._swapped && !c._modded) return '';
+  if(c._chip) return c._chip;
+  const src = c._src && S.flagSrc[c._src];
+  return src ? `承接 ${src.date}「${src.t}」` : '受此前决策影响';
+}
+
+/* 承接句：节点定义了 bridge 模板就用（{prev}=上轮选择），否则按局势规则兜底 */
+function bridgeLine(n){
+  const h = S.history[S.history.length - 1];
+  if(!h) return '';
+  if(n.bridge) return n.bridge.replaceAll('{prev}', h.t);
+  const rev = S.subs * S.arpu;
+  let clause = '';
+  if(S.launched && rev >= S.burn) clause = '收入第一次盖过了烧钱，董事会的语气变了。';
+  else if(S.cash < CASE.burnAlert) clause = '账上的钱，已经让 CFO 开始按周汇报。';
+  else if(S.launched && S.subs < CASE.narr.low) clause = '用户来了又走，留存是眼下最刺眼的问题。';
+  else if(CASE.showDemand && demandFactor() < 0.9) clause = '外部需求还在退潮，你比谁都清楚这意味着什么。';
+  else if(!S.launched) clause = '产品还没上线，一切都还只是计划。';
+  return `上一轮，你选择了「${h.t}」。${clause}`;
+}
 
 function applyChoice(c){
   const s = S;
@@ -1035,7 +1108,8 @@ function applyChoice(c){
   if(c.team) s.team = clamp(s.team + c.team, 0, 100);
   if(c.burn) s.burn = Math.max(CASE.minBurn, s.burn + c.burn);
   if(c.priceBoost) s.flags.priceBoost = true;
-  if(c.flag) s.flags[c.flag] = true;
+  if(c.flag){ s.flags[c.flag] = true;
+    if(!s.flagSrc[c.flag]) s.flagSrc[c.flag] = {date: NODES[nodeIndex].date, t: c.t}; }
   if(c.final) s.flags.final = c.final;
 }
 
@@ -1191,10 +1265,14 @@ function renderDashboard(){
     ? `<div class="kpi-row"><span class="k">外部需求</span><span class="v" style="color:${d<0.7?'var(--blood)':d<0.95?'var(--gold)':'var(--bone)'}">×${d.toFixed(2)}</span></div>`
     : '';
 
+  const rev = s.subs * s.arpu;
+  const revRow = `<div class="kpi-row"><span class="k">月收入</span><span class="v" style="color:${s.launched && rev >= s.burn ? 'var(--acid)' : 'var(--bone)'}">${s.launched ? '$' + rev.toFixed(1) + 'M' : '—'}</span></div>`;
+
   document.getElementById('kpis').innerHTML = `
     <div class="kpi-row"><span class="k">资金</span><span class="v" style="color:${s.cash<CASE.burnAlert?'var(--blood)':'var(--bone)'}">${fmtMoney(s.cash)}</span></div>
     <div class="kpi-row"><span class="k">现金跑道</span><span class="v">${runway()}</span></div>
     <div class="kpi-row"><span class="k">${CASE.subsLabel}</span><span class="v">${s.launched?fmtSubs(s.subs):'未上线'}</span></div>
+    ${revRow}
     <div class="kpi-row"><span class="k">月烧钱</span><span class="v">${s.burn.toFixed(0)}M</span></div>
     ${demandRow}
   `;
@@ -1220,23 +1298,27 @@ function renderDashboard(){
 function renderNode(){
   const n = NODES[nodeIndex];
   const stage = document.getElementById('stage');
+  const bridge = bridgeLine(n);
   let html = `<div class="reveal">
     <div class="date-tag">${n.date}</div>
     <h2 class="node-title">${n.title}</h2>
+    ${bridge ? `<div class="bridge">${bridge}</div>` : ''}
     <p class="brief">${n.brief}</p>
     <div class="choices">`;
-  n.choices.forEach((c,i)=>{
+  effectiveChoices(n).forEach((c,i)=>{
     const marks = [];
     if(c.cash) marks.push(`<span class="mk ${c.cash>0?'up':'dn'}">资金 ${c.cash>0?'+':''}${c.cash}M</span>`);
     if(c.content) marks.push(`<span class="mk up">${CASE.contentLabel} +${c.content}</span>`);
     if(c.product) marks.push(`<span class="mk ${c.product>0?'up':'dn'}">产品 ${c.product>0?'+':''}${c.product}</span>`);
     if(c.pmf) marks.push(`<span class="mk ${c.pmf>0?'up':'dn'}">市场契合 ${c.pmf>0?'+':''}${c.pmf}</span>`);
     if(c.team) marks.push(`<span class="mk ${c.team>0?'up':'dn'}">团队 ${c.team>0?'+':''}${c.team}</span>`);
+    const chip = chainChip(c);
     html += `<button class="choice" onclick="choose(${i})">
       <div class="tag">${c.tag||''}</div>
       <div class="ct"><span class="idx">${String(i+1).padStart(2,'0')}</span>${c.t}</div>
       <div class="cd">${c.d}</div>
       ${marks.length?`<div class="marks">${marks.join('')}</div>`:''}
+      ${chip?`<div><span class="chain">⤷ ${chip}</span></div>`:''}
     </button>`;
   });
   html += `</div>
@@ -1248,12 +1330,12 @@ function renderNode(){
 function choose(i){
   if(phase !== 'choice') return;
   const n = NODES[nodeIndex];
-  const c = n.choices[i];
+  const c = effectiveChoices(n)[i];
   if(!c) return;
 
   lastChoice = c;
   const beforeCash = S.cash, beforeMonth = S.month;
-  S.history.push({idx: nodeIndex, ci: i});
+  S.history.push({idx: nodeIndex, ci: i, t: c.t, hist: !!c.hist});
   applyChoice(c);
   phase = 'result';
 
@@ -1735,22 +1817,22 @@ function showEnding(){
   // 决策回放
   const tlRows = s.history.map(h=>{
     const nd = NODES[h.idx];
-    const mine = nd.choices[h.ci];
     const hist = nd.choices.find(c=>c.hist);
-    const same = !!mine.hist;
+    const myTitle = h.t || (nd.choices[h.ci] || {}).t || '—';
+    const same = !!h.hist;
     const cls = same ? '' : (nd.pivotal ? 'pv' : 'df');
     const badge = same ? '' : nd.pivotal
       ? '<span class="tl-badge pv">关键分叉</span>'
       : '<span class="tl-badge">分叉</span>';
     const chips = same
-      ? `<span class="tl-chip hist">与历史一致 · ${mine.t}</span>`
-      : `<span class="tl-chip you">你 · ${mine.t}</span><span class="tl-chip hist">历史 · ${hist ? hist.t : '—'}</span>`;
+      ? `<span class="tl-chip hist">与历史一致 · ${myTitle}</span>`
+      : `<span class="tl-chip you">你 · ${myTitle}</span><span class="tl-chip hist">历史 · ${hist ? hist.t : '—'}</span>`;
     const note = (!same && nd.pivotal) ? `<div class="tl-note">${nd.pivotal}</div>` : '';
     return `<div class="tl-row ${cls}"><i></i>
       <div class="tl-meta"><span class="tl-date">${nd.date}</span>${nd.title}${badge}</div>
       <div class="tl-chips">${chips}</div>${note}</div>`;
   }).join('');
-  const divCount = s.history.filter(h=>!NODES[h.idx].choices[h.ci].hist).length;
+  const divCount = s.history.filter(h=>!h.hist).length;
   const deadRow = s.dead
     ? `<div class="tl-row dead"><i></i><div class="tl-meta"><span class="tl-date">${dateOf(s.month)}</span>现金耗尽，公司提前死亡</div></div>`
     : '';
