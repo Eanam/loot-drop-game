@@ -35,8 +35,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 DEFAULTS = {
     "api_key": "",
-    "base_url": "https://api.deepseek.com/v1",
-    "model": "deepseek-chat",
+    "base_url": "https://apihub.agnes-ai.com/v1",
+    "model": "agnes-2.5-flash",
     "port": 8000,
 }
 
