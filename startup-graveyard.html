@@ -662,10 +662,21 @@ const QUIBI_NODES = [
        cash:-70, pmf:10, flag:'adModel',
        note:'换了一条命，也换掉了一身包袱。'}
     ],
-    swap:[{when:'tv', index:1, choice:
-      {t:'把电视端做深', d:'那块屏幕你已经在上面了，现在把客厅场景的完播率做到手机同级。', tag:'深耕',
-       cash:-30, product:8, pmf:10,
-       note:'功能早就在了——难的是让人真的用它。'}
+    variants:[{
+      when:'tv', title:'客厅战役',
+      brief:'手机端的失血还没止住，但你早早上车的电视端正在回报你：客厅场景的完播率已经接近手机同级。Roku 和 Netflix 的人都开始约你喝咖啡。账上的钱，只够认真打一场仗。',
+      choices:[
+        {t:'全渠道并重，客厅只做标配', d:'手机、平板、电视一碗水端平，谁也不偏心。', tag:'均衡',
+         cash:-45, burn:6, product:8, pmf:6,
+         note:'每条战线都守住了，每条战线都不突出——资源被摊成了薄薄一层。'},
+        {t:'战略重心转向客厅', d:'把最好的内容排播和工程资源压到电视端，手机端转为跟进的第二屏。', tag:'聚焦',
+         cash:-30, burn:3, product:12, pmf:10, flag:'livingRoom',
+         note:'你终于承认了一件事：那块屏幕不是功能，是命。'},
+        {t:'把客厅优势卖给巨头', d:'拿着电视端的完播率数据去找 Roku：要么收购，要么深度捆绑预装。', tag:'变现',
+         cash:40, pmf:-4, flag:'rokuDeal',
+         note:'你把最值钱的东西摆上了货架——价格合适，但主动权已经不在你手里。'}
+      ],
+      pivotal:'全局最后一次低成本转身的机会——这一次，你手里握着别人没有的数据。'
     }],
     pivotal:'留存的失血此时还止得住——再晚三个月，补什么功能都来不及了。',
     history:'直到 2020 年年中才补上投屏等功能，但用户流失已经不可逆。'
@@ -837,10 +848,21 @@ const HOPIN_NODES = [
        mods:[{when:'disciplined', pmf:4, note:'你一直留着调整的余地——现在它变成了转身的速度。'}],
        note:'公司活下来了，但也失去了增长——你只是把死亡往后推了。'}
     ],
-    swap:[{when:'!streamyard', index:1, chip:'承接 2021.03「不融 C 轮，全部自研」', choice:
-      {t:'卖掉活动业务，聚焦自研产品线', d:'承认「活动平台」的故事结束了，把资源压到还有现金流的自研产品上。', tag:'聚焦',
-       cash:25, team:-10, burn:-12, pmf:10, flag:'focusStreamyard',
-       note:'没有 StreamYard 可卖——但你仍然可以结束那个故事，保住亲手造的东西。'}
+    variants:[{
+      when:'!streamyard', title:'断臂',
+      brief:'现金只够 9 个月。活动业务在萎缩，而你手里没有 StreamYard——没有别人的增长引擎可买，只有自己一行一行造出来的东西。你必须决定：这家公司到底是谁。',
+      choices:[
+        {t:'保活动业务，工具线止损', d:'活动平台是估值故事的根。收缩自研工具线，把仅剩的现金留给主叙事。', tag:'保故事',
+         cash:-20, team:-10, burn:-8, pmf:2,
+         note:'你保住了故事，但故事的听众正在离场。'},
+        {t:'关停活动业务，全力自研', d:'承认「活动平台」的故事结束了，把所有资源压到亲手造的产品线上。', tag:'断臂',
+         cash:25, team:-10, burn:-12, pmf:10, flag:'focusStreamyard',
+         note:'没有 StreamYard 可卖——你结束的是故事本身，保住的是亲手造的东西。'},
+        {t:'双线节食', d:'两条线都砍到最低配置，谁都不放弃，谁也长不大。', tag:'都要',
+         cash:-10, team:-8, burn:-13,
+         note:'你谁也没得罪，除了未来的自己。'}
+      ],
+      pivotal:'现金只剩 9 个月时，聚焦比勇气值钱——哪怕聚焦意味着亲手结束那个让你成为独角兽的故事。'
     }],
     pivotal:'现金只剩 9 个月时，聚焦比勇气值钱。',
     history:'Hopin 在 2022 年下半年继续收缩，把重心转向 StreamYard，同时为活动业务寻找买家。'
@@ -1085,6 +1107,15 @@ function chainChip(c){
   return src ? `承接 ${src.date}「${src.t}」` : '受此前决策影响';
 }
 
+/* 生效节点：variants 命中时整节点替换（日期槽位锁死不变；内容由 LLM 起草、人审固化） */
+function activeNode(i){
+  const base = NODES[i === undefined ? nodeIndex : i];
+  if(!base.variants) return base;
+  const v = base.variants.find(v=>condHolds(v.when));
+  if(!v) return base;
+  return Object.assign({}, base, v, {_variant:true});
+}
+
 /* 承接句：节点定义了 bridge 模板就用（{prev}=上轮选择），否则按局势规则兜底 */
 function bridgeLine(n){
   const h = S.history[S.history.length - 1];
@@ -1297,11 +1328,11 @@ function renderDashboard(){
 }
 
 function renderNode(){
-  const n = NODES[nodeIndex];
+  const n = activeNode();
   const stage = document.getElementById('stage');
   const bridge = bridgeLine(n);
   let html = `<div class="reveal">
-    <div class="date-tag">${n.date}</div>
+    <div class="date-tag">${n.date}${n._variant ? ' · <span style="color:var(--gold)">⤷ 局面已因你的选择改变</span>' : ''}</div>
     <h2 class="node-title">${n.title}</h2>
     ${bridge ? `<div class="bridge">${bridge}</div>` : ''}
     <p class="brief">${n.brief}</p>
@@ -1330,13 +1361,13 @@ function renderNode(){
 
 function choose(i){
   if(phase !== 'choice') return;
-  const n = NODES[nodeIndex];
+  const n = activeNode();
   const c = effectiveChoices(n)[i];
   if(!c) return;
 
   lastChoice = c;
   const beforeCash = S.cash, beforeMonth = S.month;
-  S.history.push({idx: nodeIndex, ci: i, t: c.t, hist: !!c.hist});
+  S.history.push({idx: nodeIndex, ci: i, t: c.t, hist: !!c.hist, nt: n.title, pv: n.pivotal, variant: !!n._variant});
   applyChoice(c);
   phase = 'result';
 
@@ -1388,7 +1419,7 @@ function renderResult(c, n, meta){
     html += `<div class="next-row"><span class="hint">${CASE.totalMonths} 个月走完了</span>
       <button class="btn acid" onclick="showEnding()">查看结局 →</button></div>`;
   } else {
-    html += `<div class="next-row"><span class="hint">下一站：${NODES[nodeIndex+1].date} ${NODES[nodeIndex+1].title}</span>
+    html += `<div class="next-row"><span class="hint">下一站：${activeNode(nodeIndex+1).date} ${activeNode(nodeIndex+1).title}</span>
       <button class="btn acid" onclick="nextNode()">继续 →</button></div>`;
   }
   html += `</div>`;
@@ -1929,17 +1960,19 @@ function showEnding(){
     const nd = NODES[h.idx];
     const hist = nd.choices.find(c=>c.hist);
     const myTitle = h.t || (nd.choices[h.ci] || {}).t || '—';
+    const title = h.nt || nd.title;               // 命中变体时用当时实际打的节点标题
+    const pv = h.pv !== undefined ? h.pv : nd.pivotal;
     const same = !!h.hist;
-    const cls = same ? '' : (nd.pivotal ? 'pv' : 'df');
-    const badge = same ? '' : nd.pivotal
+    const cls = same ? '' : (pv ? 'pv' : 'df');
+    const badge = same ? '' : pv
       ? '<span class="tl-badge pv">关键分叉</span>'
       : '<span class="tl-badge">分叉</span>';
     const chips = same
       ? `<span class="tl-chip hist">与历史一致 · ${myTitle}</span>`
       : `<span class="tl-chip you">你 · ${myTitle}</span><span class="tl-chip hist">历史 · ${hist ? hist.t : '—'}</span>`;
-    const note = (!same && nd.pivotal) ? `<div class="tl-note">${nd.pivotal}</div>` : '';
+    const note = (!same && pv) ? `<div class="tl-note">${pv}</div>` : '';
     return `<div class="tl-row ${cls}"><i></i>
-      <div class="tl-meta"><span class="tl-date">${nd.date}</span>${nd.title}${badge}</div>
+      <div class="tl-meta"><span class="tl-date">${nd.date}</span>${title}${badge}</div>
       <div class="tl-chips">${chips}</div>${note}</div>`;
   }).join('');
   const divCount = s.history.filter(h=>!h.hist).length;
