@@ -6,3 +6,7 @@ llm_config.json
 .trae-html-share-packages/
 __pycache__/
 .DS_Store
+
+# Next.js
+web/node_modules/
+web/.next/
