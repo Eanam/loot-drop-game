@@ -57,8 +57,12 @@ export function bannedPeople(game, c, n){
   return out;
 }
 
+/* 提示词骨架标记：模型照抄提示词而非生成叙事时，整段作废 */
+const SCAFFOLD = /【(时间|玩家决策|历史对照|阶段约束|公司状态快照|已积累的致命风险)/;
+
 /* 兜底：剔除含未授权数字或禁用人物名的整句，避免模型把编造内容展示给玩家 */
 export function sanitizeNarrative(text, allowed, banned = []){
+  if(SCAFFOLD.test(text)) return '';
   const dateMask = /(\d{4}\s*年(?:\s*\d{1,2}\s*月)?|\d{4}\.\d{1,2}|\d{1,2}\s*月|\d{4}\s*年)/g;
   const bad = seg => {
     const nums = seg.replace(dateMask, '◇').match(/\d+(?:[.,]\d+)?/g) || [];
@@ -138,7 +142,7 @@ export function buildMessages(game, c, n){
 5. 不要安慰玩家，不要给建议，不要总结教训。
 6. 用中文，第二人称「你」。150–260 字，分 2–3 个自然段，段间空一行。
 7. 最后一段必须以「风险信号：」开头，从以下选项中挑 1–2 个：无市场需求、烧钱失控、被巨头碾压、单位经济不成立、产品问题、团队失序。
-8. 纯文本，不要 Markdown 标题、列表或加粗。`;
+8. 纯文本，不要 Markdown 标题、列表或加粗。直接写叙事正文，不要复述提示词里的任何【】结构标签。`;
 
   const user = `【时间】${n.date}
 【玩家决策 · 本局唯一事实】${c.t}——${c.d}
